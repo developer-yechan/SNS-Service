@@ -17,6 +17,7 @@ import { PostLike } from './entity/post-likes.entity';
 import { PostComment } from './entity/post-comments.entity';
 import { Hashtag } from './entity/hashtag.entity';
 import { PostImage } from './entity/post-images.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { PostImage } from './entity/post-images.entity';
         entities: [User, Post, PostLike, PostComment, Hashtag, PostImage],
       }),
     }),
+    AuthModule,
   ],
   controllers: [
     AppController,

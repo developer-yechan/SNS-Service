@@ -1,10 +1,16 @@
-import { Column, Entity, PrimaryColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Post } from 'src/entity/post.entity';
 import { User } from 'src/entity/user.entity';
 
 @Entity('postLikes')
 export class PostLike {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => Post, (post) => post.postLikes)

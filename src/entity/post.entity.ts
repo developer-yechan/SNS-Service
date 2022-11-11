@@ -8,14 +8,14 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Hashtag } from './hashtag.entity';
 import { PostImage } from './post-images.entity';
 
 @Entity('posts')
 export class Post {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()

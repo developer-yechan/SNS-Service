@@ -25,7 +25,6 @@ export class PostService {
     if (hashtags) {
       const hashtagInstanceArr = [];
       const hashtagArr = hashtags.split(',');
-      console.log(hashtagArr, 123);
       // 현재 db에 저장된 hashtag 목록(객체) 가져오기
       const findHashtags = await this.hashtagRepository.find();
       // hashtag 객체에서 hashtag value 값만 배열로 할당
@@ -53,7 +52,6 @@ export class PostService {
         }
       }
       if (hashtagInstanceArr.length !== 0) {
-        console.log(hashtagInstanceArr, 789);
         post.hashtags = hashtagInstanceArr;
       }
     }

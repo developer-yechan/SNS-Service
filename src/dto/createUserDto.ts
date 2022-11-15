@@ -27,9 +27,9 @@ export class CreateUserDto {
   readonly phone_number: string;
 
   @IsString()
-  name: string;
+  readonly name: string;
 
   @IsOptional()
   @IsString()
-  image: string;
+  readonly image: string;
 }

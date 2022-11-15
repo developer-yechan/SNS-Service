@@ -7,6 +7,7 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { DateContent } from './abstract-base.entity';
 
 @Entity('postImages')
 export class PostImage {

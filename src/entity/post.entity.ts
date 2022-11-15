@@ -10,11 +10,12 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { DateContent } from './abstract-base.entity';
 import { Hashtag } from './hashtag.entity';
 import { PostImage } from './post-images.entity';
 
 @Entity('posts')
-export class Post {
+export class Post extends DateContent {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,9 +24,6 @@ export class Post {
 
   @Column()
   content: string;
-
-  @Column()
-  hits: number;
 
   @ManyToOne(() => User, (user) => user.posts)
   user: User;

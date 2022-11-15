@@ -7,9 +7,10 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { DateContent } from './abstract-base.entity';
 
 @Entity('postComments')
-export class PostComment {
+export class PostComment extends DateContent {
   @PrimaryGeneratedColumn()
   id: number;
 

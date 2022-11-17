@@ -15,7 +15,6 @@ export class AuthService {
     console.log(user, password, 123123);
     const validatePassword = await bcrypt.compare(password, user.password);
     if (user && validatePassword) {
-      //password 제외한 user 정보 result에 담아줌
       const { password, ...result } = user;
       return result;
     }

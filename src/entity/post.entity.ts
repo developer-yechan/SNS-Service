@@ -9,6 +9,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  RelationId,
 } from 'typeorm';
 import { DateContent } from './abstract-base.entity';
 import { Hashtag } from './hashtag.entity';
@@ -19,14 +20,21 @@ export class Post extends DateContent {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   title: string;
 
-  @Column()
+  @Column({ nullable: false })
   content: string;
+
+  //조회 수
+  @Column({ nullable: true })
+  hits: number;
 
   @ManyToOne(() => User, (user) => user.posts)
   user: User;
+
+  @RelationId((post: Post) => post.user)
+  userId: number;
 
   @OneToMany(() => PostComment, (postComment) => postComment.post)
   postComments: PostComment[];
@@ -37,7 +45,9 @@ export class Post extends DateContent {
   @OneToMany(() => PostImage, (postImage) => postImage.post)
   postImages: PostImage[];
 
-  @ManyToMany(() => Hashtag)
+  @ManyToMany(() => Hashtag, (hashtags) => hashtags.id, {
+    cascade: true,
+  })
   @JoinTable()
   hashtags: Hashtag[];
 }

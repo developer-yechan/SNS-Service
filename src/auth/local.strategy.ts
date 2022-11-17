@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
+      //유저이름을 이메일로 변경
       usernameField: 'email',
     });
   }

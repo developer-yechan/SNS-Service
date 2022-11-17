@@ -17,6 +17,6 @@ export class PostImage {
   @Column()
   image: string;
 
-  @ManyToOne(() => Post, (post) => post.postImages)
+  @ManyToOne(() => Post, (post) => post.postImages, { nullable: false })
   post: Post;
 }

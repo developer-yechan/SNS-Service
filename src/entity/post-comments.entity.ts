@@ -17,9 +17,9 @@ export class PostComment extends DateContent {
   @Column()
   comment: string;
 
-  @ManyToOne(() => Post, (post) => post.postComments)
+  @ManyToOne(() => Post, (post) => post.postComments, { nullable: false })
   post: Post;
 
-  @ManyToOne(() => User, (user) => user.postComments)
+  @ManyToOne(() => User, (user) => user.postComments, { nullable: false })
   user: User;
 }

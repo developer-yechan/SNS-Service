@@ -38,6 +38,7 @@ import { User } from './entity/user.entity';
         password: ConfigService.get('database.password'),
         database: ConfigService.get('database.name'),
         synchronize: true,
+        logging: ['query', 'error'],
         entities: [User, Post, PostLike, PostComment, Hashtag, PostImage],
       }),
     }),

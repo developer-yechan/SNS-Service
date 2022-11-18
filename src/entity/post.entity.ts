@@ -10,6 +10,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
+  DeleteDateColumn,
 } from 'typeorm';
 import { DateContent } from './abstract-base.entity';
 import { Hashtag } from './hashtag.entity';
@@ -29,6 +30,9 @@ export class Post extends DateContent {
   //조회 수
   @Column({ nullable: true })
   hits: number;
+
+  @DeleteDateColumn()
+  deletedAt: Date | null;
 
   @ManyToOne(() => User, (user) => user.posts)
   user: User;

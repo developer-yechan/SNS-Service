@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from '../entity/post.entity';
 // import { PostImage } from 'src/entity/post-images.entity';
@@ -69,54 +69,44 @@ export class PostService {
 
   async update(data: UpdatePostDto) {
     const { id, title, content, postImages, hashtags } = data;
-    const findHashtags = await this.postRepository
-      .createQueryBuilder('posts')
-      .select('hashtags.hashtag')
-      .leftJoin('posts.hashtags', 'hashtags')
-      .where('posts.id = :id', { id })
-      .getRawMany();
-    console.log(findHashtags, 'hashtags');
-    const updatePost = await this.postRepository.update(id, {
-      title,
-      content,
-    });
-    // if (hashtags) {
-    //   const hashtagInstanceArr = [];
-    //   const hashtagArr = hashtags.split(',');
-    //   // 현재 db에 저장된 hashtag 목록(객체) 가져오기
-    //   const findHashtags = this.hashtagRepository
-    //     .createQueryBuilder('hashtags')
-    //     .leftJoin('hashtags.posts', 'posts')
-    //     .where('posts.id = :id', { id });
-    //   // hashtag 객체에서 hashtag value 값만 배열로 할당
-    //   const hashtagValueArr = findHashtags.map((hashtag) => hashtag['hashtag']);
-    //   for (const hashtag of hashtagArr) {
-    //     //새로운 hashtag들 hashtag table에 저장
-    //     if (!hashtagValueArr.includes(hashtag)) {
-    //       // 매 루프 마다 새로운 hashtag 객체 생성 --> 이렇게 안하면 매 루프 마다 hashtag 정보 덮어씌워짐
-    //       const hashtagEntity = new Hashtag();
-    //       hashtagEntity.hashtag = hashtag;
+    const newPost = new Post();
 
-    //       await this.hashtagRepository.save(hashtagEntity);
-    //       // ManyToMany table에 삽입을 위해 hashtagInstanceArr 배열에 hashtag 객체 push
-    //       hashtagInstanceArr.push(hashtagEntity);
-    //       // 이미 hashtag table에 저장된 hashtag들  ManyToMany table에 삽입을 위한 로직
-    //     } else {
-    //       const hashtagEntity = new Hashtag();
-
-    //       const findHashtag = findHashtags.find(
-    //         (element) => element.hashtag === hashtag,
-    //       );
-    //       hashtagEntity.id = findHashtag.id;
-    //       hashtagEntity.hashtag = findHashtag.hashtag;
-    //       hashtagInstanceArr.push(hashtagEntity);
-    //     }
-    //   }
-    //   if (hashtagInstanceArr.length !== 0) {
-    //     post.hashtags = hashtagInstanceArr;
-    //   }
-    // }
-    // const hashtag = await this.hashtagRepository.update();
+    if (hashtags) {
+      const hashtagInstanceArr = [];
+      const hashtagArr = hashtags.split(',');
+      // 현재 db에 저장된 hashtag 목록(객체) 가져오기
+      const findHashtags = await this.postRepository
+        .createQueryBuilder('posts')
+        .select('hashtags.hashtag')
+        .leftJoin('posts.hashtags', 'hashtags')
+        .where('posts.id = :id', { id })
+        .getRawMany();
+      const hashtagValueArr = findHashtags.map((hashtag) => hashtag['hashtag']);
+      const hashtagToRemove = findHashtags.filter((hashtag) => {
+        hashtag;
+      });
+      const newHashtagArr = hashtagArr.filter(
+        (hashtag) => !hashtagValueArr.includes(hashtag),
+      );
+      for (const newHashtag of newHashtagArr) {
+        const hashtagEntity = new Hashtag();
+        hashtagEntity.hashtag = newHashtag;
+        await this.hashtagRepository.save(hashtagEntity);
+        hashtagInstanceArr.push(hashtagEntity);
+      }
+      newPost.hashtags = hashtagInstanceArr;
+      await this.postRepository.save(newPost);
+      const post = this.postRepository;
+      const newHashtags = await this.postRepository
+        .createQueryBuilder('posts')
+        .select('hashtags.hashtag')
+        .leftJoin('posts.hashtags', 'hashtags')
+        .where('posts.id = :id', { id })
+        .getRawMany();
+      newPost.hashtags = newHashtags.filter((hashtag) => {
+        return;
+      });
+    }
   }
 
   async findAll(): Promise<Post[]> {
@@ -136,7 +126,7 @@ export class PostService {
         .from(PostLike, 'likes')
         .groupBy('likes.postId');
     };
-    const posts = this.postRepository
+    const posts = await this.postRepository
       .createQueryBuilder('posts')
       .select([
         'posts.id AS id',
@@ -154,11 +144,26 @@ export class PostService {
   }
 
   async findOne(id: number): Promise<Post> {
-    const post = this.postRepository.findOne({
+    const post = await this.postRepository.findOne({
       where: {
         id,
       },
     });
     return post;
+  }
+
+  async delete(id: number, userId: number) {
+    const deletePost = await this.postRepository
+      .createQueryBuilder()
+      .softDelete()
+      .where('id = :id and userId = :userId and deletedAt is null', {
+        id,
+        userId,
+      })
+      .execute();
+    if (!deletePost.affected) {
+      throw new NotFoundException('이미 삭제된 게시물 입니다.');
+    }
+    return { message: '게시물 삭제 성공' };
   }
 }

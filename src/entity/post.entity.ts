@@ -29,7 +29,7 @@ export class Post extends DateContent {
 
   //조회 수
   @Column({ nullable: true })
-  hits: number;
+  hits: number | 0;
 
   @DeleteDateColumn()
   deletedAt: Date | null;

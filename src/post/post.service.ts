@@ -144,11 +144,45 @@ export class PostService {
   }
 
   async findOne(id: number): Promise<Post> {
-    const post = await this.postRepository.findOne({
-      where: {
-        id,
-      },
+    // hashtag 배열 가져오는 sub query
+    const hashtags = (subQuery) => {
+      return subQuery
+        .select([
+          'posts.id AS postId',
+          'ARRAY_AGG(hashtags.hashtag) AS hashtags',
+        ])
+        .from(Post, 'posts')
+        .leftJoin('posts.hashtags', 'hashtags')
+        .groupBy('posts.id');
+    };
+    // 좋아요 개수 가져오는 sub query
+    const likes = (subQuery) => {
+      return subQuery
+        .select('COALESCE(SUM(likes.postId)::INTEGER,0)', 'likes')
+        .from(PostLike, 'likes')
+        .groupBy('likes.postId');
+    };
+    const post = await this.postRepository
+      .createQueryBuilder('posts')
+      .select([
+        'posts.id AS id',
+        'posts.title AS title',
+        'posts.content AS content',
+        'posts.createdAt AS createdAt',
+        'posts.hits AS hits',
+        'users.name AS username',
+        'hashtags.hashtags',
+      ])
+      .addSelect(likes)
+      .leftJoin('posts.user', 'users')
+      .leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId')
+      .where('posts.id = :id', { id })
+      .getRawOne();
+    // 조회수 + 1
+    await this.postRepository.update(id, {
+      hits: post.hits + 1,
     });
+
     return post;
   }
 

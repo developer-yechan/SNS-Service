@@ -4,6 +4,7 @@ import {
   PrimaryColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Post } from 'src/entity/post.entity';
 import { User } from 'src/entity/user.entity';

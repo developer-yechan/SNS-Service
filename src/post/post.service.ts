@@ -178,6 +178,7 @@ export class PostService {
       .leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId')
       .where('posts.id = :id', { id })
       .getRawOne();
+    console.log(post, 123123);
     // 조회수 + 1
     await this.postRepository.update(id, {
       hits: post.hits + 1,

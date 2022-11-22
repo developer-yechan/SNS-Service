@@ -67,46 +67,51 @@ export class PostService {
     return post;
   }
 
-  async update(data: UpdatePostDto) {
+  async update(data: UpdatePostDto, userId: number) {
     const { id, title, content, postImages, hashtags } = data;
-    const newPost = new Post();
 
+    const findPost = await this.findOne(id);
     if (hashtags) {
-      const hashtagInstanceArr = [];
-      const hashtagArr = hashtags.split(',');
-      // 현재 db에 저장된 hashtag 목록(객체) 가져오기
-      const findHashtags = await this.postRepository
-        .createQueryBuilder('posts')
-        .select('hashtags.hashtag')
-        .leftJoin('posts.hashtags', 'hashtags')
-        .where('posts.id = :id', { id })
+      // 새로운 hashtag 인스턴스를 담아줄 배열
+      let hashtagInstanceArr = [];
+      //update할 hashtag 문자열을 배열로 변환
+      let newHashtagArr = hashtags.split(',');
+      //update할 hashtag 목록에 있는 db hashtag 목록
+      const findHashtags = await this.hashtagRepository
+        .createQueryBuilder()
+        .select(['id', 'hashtag'])
+        .where('hashtag IN (:...hashtags)', { hashtags: newHashtagArr })
         .getRawMany();
-      const hashtagValueArr = findHashtags.map((hashtag) => hashtag['hashtag']);
-      const hashtagToRemove = findHashtags.filter((hashtag) => {
-        hashtag;
-      });
-      const newHashtagArr = hashtagArr.filter(
-        (hashtag) => !hashtagValueArr.includes(hashtag),
+      // hashtag 객체에서 hashtag 문자열만 추출하여 새로운 배열 반환
+      const hashtagArr = findHashtags.map((hashtag) => hashtag.hashtag);
+      // update할 hashtag 배열에서 새로운 hashtag만 필터링한 배열 반환(기존에 db에 없는)
+      newHashtagArr = newHashtagArr.filter(
+        (hashtag) => !hashtagArr.includes(hashtag),
       );
-      for (const newHashtag of newHashtagArr) {
-        const hashtagEntity = new Hashtag();
-        hashtagEntity.hashtag = newHashtag;
-        await this.hashtagRepository.save(hashtagEntity);
-        hashtagInstanceArr.push(hashtagEntity);
+      // 새로운 hashtag가 있을 경우에 각 hashtag 마다 새로운 hashtag 인스턴스 생성
+      if (newHashtagArr.length > 0) {
+        for (const newHashtag of newHashtagArr) {
+          const hashtagEntity = new Hashtag();
+          hashtagEntity.hashtag = newHashtag;
+          hashtagInstanceArr.push(hashtagEntity);
+        }
       }
-      newPost.hashtags = hashtagInstanceArr;
-      await this.postRepository.save(newPost);
-      const post = this.postRepository;
-      const newHashtags = await this.postRepository
-        .createQueryBuilder('posts')
-        .select('hashtags.hashtag')
-        .leftJoin('posts.hashtags', 'hashtags')
-        .where('posts.id = :id', { id })
-        .getRawMany();
-      newPost.hashtags = newHashtags.filter((hashtag) => {
-        return;
-      });
+      // 기존의 hashtag에서 남겨야할 hashtag + 새로운 hashtag 배열
+      hashtagInstanceArr = [...findHashtags, ...hashtagInstanceArr];
+      // hashtag 테이블과 posts_hashtags_hashtags 테이블에 삽입
+      findPost.hashtags = hashtagInstanceArr;
+      await this.postRepository.save(findPost);
     }
+    // hashtag를 제외한 나머지 속성 update
+    const updatePost = await this.postRepository.update(id, {
+      title,
+      content,
+    });
+    // 게시물 삭제된 경우 예외처리
+    if (!updatePost.affected) {
+      throw new NotFoundException('이미 삭제된 게시물입니다.');
+    }
+    return { message: '게시물 업데이트 완료' };
   }
 
   async findAll(): Promise<Post[]> {
@@ -178,7 +183,7 @@ export class PostService {
       .leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId')
       .where('posts.id = :id', { id })
       .getRawOne();
-    console.log(post, 123123);
+
     // 조회수 + 1
     await this.postRepository.update(id, {
       hits: post.hits + 1,

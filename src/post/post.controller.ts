@@ -40,7 +40,7 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @Patch()
   updatePosts(@Body() data: UpdatePostDto, @Request() req) {
-    return this.postService.update(data);
+    return this.postService.update(data, req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)

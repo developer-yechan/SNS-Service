@@ -8,10 +8,6 @@ export class CreatePostDto {
   content: string;
 
   @IsOptional()
-  @IsString({ each: true })
-  postImages: string[];
-
-  @IsOptional()
   @IsString()
   hashtags: string;
 }

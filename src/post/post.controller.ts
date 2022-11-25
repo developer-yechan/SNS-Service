@@ -8,6 +8,9 @@ import {
   Param,
   Patch,
   Delete,
+  UseInterceptors,
+  Bind,
+  UploadedFiles,
 } from '@nestjs/common';
 import { CreatePostDto } from 'src/dto/createPostDto';
 import { PostService } from './post.service';
@@ -20,8 +23,8 @@ export class PostController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  createPost(@Body() data: CreatePostDto, @Request() req) {
-    const post = this.postService.create(data, req.user.userId);
+  async createPost(@Body() data: CreatePostDto, @Request() req) {
+    const post = await this.postService.create(data, req.user.userId);
     return post;
   }
 

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { identity } from 'rxjs';
 import { PostLike } from 'src/entity/post-likes.entity';
 import { Post } from 'src/entity/post.entity';
 import { Repository } from 'typeorm';

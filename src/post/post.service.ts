@@ -19,7 +19,7 @@ export class PostService {
   ) {}
 
   async create(data: CreatePostDto, userId: number) {
-    const { title, content, postImages, hashtags } = data;
+    const { title, content, hashtags } = data;
     const post = new Post();
     //post에 userId 삽입을 위해 필요
     const user = new User();
@@ -68,7 +68,7 @@ export class PostService {
   }
 
   async update(data: UpdatePostDto, userId: number) {
-    const { id, title, content, postImages, hashtags } = data;
+    const { id, title, content, hashtags } = data;
 
     const findPost = await this.findOne(id);
     if (hashtags) {
@@ -195,8 +195,8 @@ export class PostService {
   async delete(id: number, userId: number) {
     const deletePost = await this.postRepository
       .createQueryBuilder()
-      .softDelete()
-      .where('id = :id and userId = :userId and deletedAt is null', {
+      .delete()
+      .where('id = :id and userId = :userId', {
         id,
         userId,
       })

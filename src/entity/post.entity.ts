@@ -31,9 +31,6 @@ export class Post extends DateContent {
   @Column({ nullable: true })
   hits: number | 0;
 
-  @DeleteDateColumn()
-  deletedAt: Date | null;
-
   @ManyToOne(() => User, (user) => user.posts)
   user: User;
 

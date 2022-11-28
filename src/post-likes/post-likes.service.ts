@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostLike } from 'src/entity/post-likes.entity';
 import { Post } from 'src/entity/post.entity';
@@ -23,6 +27,16 @@ export class PostLikesService {
         id: postId,
       },
     });
+    if (!checkPost) {
+      throw new NotFoundException('존재하지 않는 게시물 입니다.');
+    }
+    const postLike = await this.postLikeRepository
+      .createQueryBuilder()
+      .where('"userId" = :userId and "postId" = :postId', { userId, postId })
+      .getRawOne();
+    if (postLike) {
+      throw new BadRequestException('이미 좋아요 처리된 게시물입니다.');
+    }
     const like = new PostLike();
     const user = new User();
     const post = new Post();

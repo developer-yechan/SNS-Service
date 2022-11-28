@@ -14,9 +14,15 @@ export class PostLike {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Post, (post) => post.postLikes, { nullable: false })
+  @ManyToOne(() => Post, (post) => post.postLikes, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   post: Post;
 
-  @ManyToOne(() => User, (user) => user.postLikes, { nullable: false })
+  @ManyToOne(() => User, (user) => user.postLikes, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   user: User;
 }

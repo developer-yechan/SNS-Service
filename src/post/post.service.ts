@@ -8,6 +8,7 @@ import { CreatePostDto } from '../dto/createPostDto';
 import { User } from 'src/entity/user.entity';
 import { PostLike } from 'src/entity/post-likes.entity';
 import { UpdatePostDto } from 'src/dto/updatePostDto';
+import { likes, hashtags } from 'src/query/subQuery';
 
 @Injectable()
 export class PostService {
@@ -115,22 +116,6 @@ export class PostService {
   }
 
   async findAll(): Promise<Post[]> {
-    const hashtags = (subQuery) => {
-      return subQuery
-        .select([
-          'posts.id AS postId',
-          'ARRAY_AGG(hashtags.hashtag) AS hashtags',
-        ])
-        .from(Post, 'posts')
-        .leftJoin('posts.hashtags', 'hashtags')
-        .groupBy('posts.id');
-    };
-    const likes = (subQuery) => {
-      return subQuery
-        .select('SUM(likes.postId)', 'likes')
-        .from(PostLike, 'likes')
-        .groupBy('likes.postId');
-    };
     const posts = await this.postRepository
       .createQueryBuilder('posts')
       .select([
@@ -140,33 +125,16 @@ export class PostService {
         'posts.hits AS hits',
         'users.name AS username',
         'hashtags.hashtags',
+        'likes.like_num',
       ])
-      .addSelect(likes)
       .leftJoin('posts.user', 'users')
       .leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId')
+      .leftJoin(likes, 'likes', 'posts.id = likes.postId')
       .getRawMany();
     return posts;
   }
 
   async findOne(id: number): Promise<Post> {
-    // hashtag 배열 가져오는 sub query
-    const hashtags = (subQuery) => {
-      return subQuery
-        .select([
-          'posts.id AS postId',
-          'ARRAY_AGG(hashtags.hashtag) AS hashtags',
-        ])
-        .from(Post, 'posts')
-        .leftJoin('posts.hashtags', 'hashtags')
-        .groupBy('posts.id');
-    };
-    // 좋아요 개수 가져오는 sub query
-    const likes = (subQuery) => {
-      return subQuery
-        .select('COALESCE(SUM(likes.postId)::INTEGER,0)', 'likes')
-        .from(PostLike, 'likes')
-        .groupBy('likes.postId');
-    };
     const post = await this.postRepository
       .createQueryBuilder('posts')
       .select([
@@ -177,10 +145,11 @@ export class PostService {
         'posts.hits AS hits',
         'users.name AS username',
         'hashtags.hashtags',
+        'likes.like_num',
       ])
-      .addSelect(likes)
       .leftJoin('posts.user', 'users')
       .leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId')
+      .leftJoin(likes, 'likes', 'posts.id = likes.postId')
       .where('posts.id = :id', { id })
       .getRawOne();
 

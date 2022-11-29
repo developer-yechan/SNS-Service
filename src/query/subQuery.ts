@@ -8,6 +8,7 @@ export const likes = (subQuery) => {
     .groupBy('likes.postId');
 };
 
+// postId 별 hashtag 배열을 return 하는 subQuery
 export const hashtags = (subQuery) => {
   return subQuery
     .select(['posts.id AS postId', 'ARRAY_AGG(hashtags.hashtag) AS hashtags'])

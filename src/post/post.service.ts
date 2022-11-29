@@ -29,7 +29,7 @@ export class PostService {
     // body로 받은 hashtag 문자열 배열로 변환
     if (hashtags) {
       const hashtagInstanceArr = [];
-      const hashtagArr = hashtags.split(',');
+      const hashtagArr = hashtags.split(',').map((hashtag) => hashtag.slice(1));
       // 현재 db에 저장된 hashtag 목록(객체) 가져오기
       const findHashtags = await this.hashtagRepository.find();
       // hashtag 객체에서 hashtag value 값만 배열로 할당
@@ -76,7 +76,9 @@ export class PostService {
       // 새로운 hashtag 인스턴스를 담아줄 배열
       let hashtagInstanceArr = [];
       //update할 hashtag 문자열을 배열로 변환
-      let newHashtagArr = hashtags.split(',');
+      let newHashtagArr = hashtags
+        .split(',')
+        .map((hashtag) => hashtag.slice(1));
       //update할 hashtag 목록에 있는 db hashtag 목록
       const findHashtags = await this.hashtagRepository
         .createQueryBuilder()
@@ -115,22 +117,80 @@ export class PostService {
     return { message: '게시물 업데이트 완료' };
   }
 
-  async findAll(): Promise<Post[]> {
-    const posts = await this.postRepository
+  async findAll(
+    orderBy: string,
+    order: 'DESC' | 'ASC',
+    search: string,
+    filter: string,
+    cnt: number,
+  ): Promise<Post[]> {
+    // 게시물 전체 조회 쿼리 작성
+    let query = this.postRepository
       .createQueryBuilder('posts')
       .select([
         'posts.id AS id',
         'posts.title AS title',
         'posts.createdAt AS createdAt',
-        'posts.hits AS hits',
+        'COALESCE(posts.hits,0)::int AS hits',
         'users.name AS username',
         'hashtags.hashtags',
-        'likes.like_num',
+        'COALESCE(likes.like_num,0)::int AS like_num',
       ])
       .leftJoin('posts.user', 'users')
-      .leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId')
-      .leftJoin(likes, 'likes', 'posts.id = likes.postId')
-      .getRawMany();
+      .leftJoin(likes, 'likes', 'posts.id = likes.postId');
+
+    // query parameter로 filter가 있는 경우 where 조건문을 통해 해시태그 필터링
+    if (filter) {
+      const hashtag = filter.split(',');
+      console.log(hashtag, 'hashtag');
+      const filteredHashtags = (subQuery) => {
+        return subQuery
+          .select([
+            'posts.id AS postId',
+            'ARRAY_AGG(hashtags.hashtag) AS hashtags',
+          ])
+          .from(Post, 'posts')
+          .innerJoin('posts.hashtags', 'hashtags')
+          .where('hashtags.hashtag IN (:...hashtag)', { hashtag })
+          .groupBy('posts.id');
+      };
+      //query parameter로 받은 해시태그가 있는 게시물만 남기기 위해 inner join 활용
+      query.innerJoin(
+        filteredHashtags,
+        'hashtags',
+        'posts.id = hashtags.postId',
+      );
+    } else {
+      //해시태그가 있든 없든 모든 게시물이 표시되어야 하므로 left join 활용
+      query.leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId');
+    }
+
+    // query parameter에 search가 있을 경우 제목에서 검색
+    if (search) {
+      query = query.andWhere('posts.title ILIKE :search', {
+        search: `%${search}%`,
+      });
+    }
+    // query parameter에 orderBy와 order가 있을 경우 그에 맞게 정렬
+    if (orderBy && order) {
+      query = query.orderBy(orderBy, order);
+      // orderBy만 있을 경우
+    } else if (orderBy) {
+      query = query.orderBy(orderBy, 'DESC', 'NULLS LAST');
+      // default 정렬 기준 설정
+    } else {
+      query = query.orderBy('createdAt', 'DESC');
+    }
+    // query paramemter에 cnt가 있을 경우 그에 맞게 게시글 수 조정
+    if (cnt) {
+      console.log(cnt, '23123');
+      query = query.limit(cnt);
+      // default 게시글 수 설정
+    } else {
+      query = query.limit(10);
+    }
+
+    const posts = await query.getRawMany();
     return posts;
   }
 

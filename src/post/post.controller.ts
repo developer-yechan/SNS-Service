@@ -8,9 +8,8 @@ import {
   Param,
   Patch,
   Delete,
-  UseInterceptors,
   Bind,
-  UploadedFiles,
+  Query,
 } from '@nestjs/common';
 import { CreatePostDto } from 'src/dto/createPostDto';
 import { PostService } from './post.service';
@@ -30,8 +29,14 @@ export class PostController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  getPosts() {
-    return this.postService.findAll();
+  getPosts(
+    @Query('orderBy') orderBy: string,
+    @Query('order') order: 'DESC' | 'ASC',
+    @Query('search') search: string,
+    @Query('filter') filter: string,
+    @Query('cnt') cnt: number,
+  ) {
+    return this.postService.findAll(orderBy, order, search, filter, cnt);
   }
 
   @UseGuards(JwtAuthGuard)

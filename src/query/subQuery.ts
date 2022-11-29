@@ -3,10 +3,7 @@ import { Post } from '../entity/post.entity';
 
 export const likes = (subQuery) => {
   return subQuery
-    .select([
-      'COALESCE(COUNT(likes.postId),0) AS like_num',
-      'likes.postId AS postId',
-    ])
+    .select(['COUNT(likes.postId) AS like_num', 'likes.postId AS postId'])
     .from(PostLike, 'likes')
     .groupBy('likes.postId');
 };

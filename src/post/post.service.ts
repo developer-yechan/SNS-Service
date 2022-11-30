@@ -63,7 +63,6 @@ export class PostService {
     post.title = title;
     post.content = content;
     post.user = user;
-    console.log(post, 'post');
     await this.postRepository.save(post);
     return post;
   }
@@ -187,7 +186,6 @@ export class PostService {
     }
     // query paramemter에 cnt가 있을 경우 그에 맞게 게시글 수 조정
     if (cnt) {
-      console.log(cnt, '23123');
       query = query.limit(cnt);
       // default 게시글 수 설정
     } else {

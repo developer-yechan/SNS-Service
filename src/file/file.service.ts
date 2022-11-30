@@ -40,10 +40,8 @@ export class FileService {
       .getRawMany();
     const deleteObject = [];
     for (const image of images) {
-      console.log(image, 'image');
       const url = image.imageurl.split('/'); // db에 저장된 imageUrl을 가져옴
       const delFileName = url[url.length - 1]; // imageUrl에서 파일 이름만 가져옴
-      console.log(delFileName, 'delFileName');
       deleteObject.push({ Key: delFileName });
     }
     const params = {

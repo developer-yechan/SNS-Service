@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PostLike } from 'src/entity/post-likes.entity';
-import { PostComment } from 'src/entity/post-comments.entity';
 import { DateContent } from './abstract-base.entity';
 
 @Entity('users')
@@ -35,7 +34,4 @@ export class User extends DateContent {
 
   @OneToMany(() => PostLike, (postLike) => postLike.user)
   postLikes: PostLike[];
-
-  @OneToMany(() => PostComment, (postComment) => postComment.user)
-  postComments: PostComment[];
 }

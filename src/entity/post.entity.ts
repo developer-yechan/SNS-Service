@@ -1,4 +1,3 @@
-import { PostComment } from 'src/entity/post-comments.entity';
 import { PostLike } from 'src/entity/post-likes.entity';
 import { User } from 'src/entity/user.entity';
 import {
@@ -36,9 +35,6 @@ export class Post extends DateContent {
 
   @RelationId((post: Post) => post.user)
   userId: number;
-
-  @OneToMany(() => PostComment, (postComment) => postComment.post)
-  postComments: PostComment[];
 
   @OneToMany(() => PostLike, (postLike) => postLike.post)
   postLikes: PostLike[];

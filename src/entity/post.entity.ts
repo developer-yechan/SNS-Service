@@ -1,4 +1,3 @@
-import { PostComment } from 'src/entity/post-comments.entity';
 import { PostLike } from 'src/entity/post-likes.entity';
 import { User } from 'src/entity/user.entity';
 import {
@@ -9,29 +8,33 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  RelationId,
+  DeleteDateColumn,
 } from 'typeorm';
+import { DateContent } from './abstract-base.entity';
 import { Hashtag } from './hashtag.entity';
 import { PostImage } from './post-images.entity';
 
 @Entity('posts')
-export class Post {
+export class Post extends DateContent {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   title: string;
 
-  @Column()
+  @Column({ nullable: false })
   content: string;
 
-  @Column()
-  hits: number;
+  //조회 수
+  @Column({ nullable: true })
+  hits: number | 0;
 
   @ManyToOne(() => User, (user) => user.posts)
   user: User;
 
-  @OneToMany(() => PostComment, (postComment) => postComment.post)
-  postComments: PostComment[];
+  @RelationId((post: Post) => post.user)
+  userId: number;
 
   @OneToMany(() => PostLike, (postLike) => postLike.post)
   postLikes: PostLike[];
@@ -39,7 +42,9 @@ export class Post {
   @OneToMany(() => PostImage, (postImage) => postImage.post)
   postImages: PostImage[];
 
-  @ManyToMany(() => Hashtag)
+  @ManyToMany(() => Hashtag, (hashtags) => hashtags.id, {
+    cascade: true,
+  })
   @JoinTable()
   hashtags: Hashtag[];
 }

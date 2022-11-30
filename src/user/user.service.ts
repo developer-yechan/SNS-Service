@@ -80,7 +80,6 @@ export class UserService {
     if (!updateUser.affected) {
       throw new NotFoundException('이미 삭제된 유저입니다.');
     }
-    // console.log(updateUser, 'update');
     return '회원 정보 수정 성공';
   }
 
@@ -89,7 +88,6 @@ export class UserService {
     if (!deleteUser.affected) {
       throw new NotFoundException('이미 삭제된 유저입니다.');
     }
-    // console.log(deleteUser, 'delete');
     return '회원 탈퇴 성공';
   }
 }

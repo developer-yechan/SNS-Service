@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from '../entity/post.entity';
 // import { PostImage } from 'src/entity/post-images.entity';
 import { Hashtag } from '../entity/hashtag.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, Raw } from 'typeorm';
 import { CreatePostDto } from '../dto/createPostDto';
 import { User } from 'src/entity/user.entity';
 import { PostLike } from 'src/entity/post-likes.entity';
@@ -141,8 +141,7 @@ export class PostService {
 
     // query parameter로 filter가 있는 경우 where 조건문을 통해 해시태그 필터링
     if (filter) {
-      const hashtag = filter.split(',');
-      console.log(hashtag, 'hashtag');
+      const hashtagArr = filter.split(',');
       const filteredHashtags = (subQuery) => {
         return subQuery
           .select([
@@ -151,7 +150,6 @@ export class PostService {
           ])
           .from(Post, 'posts')
           .innerJoin('posts.hashtags', 'hashtags')
-          .where('hashtags.hashtag IN (:...hashtag)', { hashtag })
           .groupBy('posts.id');
       };
       //query parameter로 받은 해시태그가 있는 게시물만 남기기 위해 inner join 활용
@@ -160,6 +158,12 @@ export class PostService {
         'hashtags',
         'posts.id = hashtags.postId',
       );
+      // hashtag 필터링 로직
+      //[ex. “서울” 검색 시 > #서울(검색됨) / #서울맛집 (검색안됨)  / #서울,#맛집(검색됨)]
+      //[ex. “서울,맛집” 검색 시 > #서울(검색안됨) / #서울맛집 (검색안됨)  / #서울,#맛집(검색됨)]
+      hashtagArr.forEach((hashtag) => {
+        query = query.andWhere(`'${hashtag}' = ANY(hashtags.hashtags)`);
+      });
     } else {
       //해시태그가 있든 없든 모든 게시물이 표시되어야 하므로 left join 활용
       query.leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId');
@@ -202,10 +206,10 @@ export class PostService {
         'posts.title AS title',
         'posts.content AS content',
         'posts.createdAt AS createdAt',
-        'posts.hits AS hits',
+        'COALESCE(posts.hits,0)::int AS hits',
         'users.name AS username',
         'hashtags.hashtags',
-        'likes.like_num',
+        'COALESCE(likes.like_num,0)::int AS like_num',
       ])
       .leftJoin('posts.user', 'users')
       .leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId')
@@ -217,7 +221,7 @@ export class PostService {
     await this.postRepository.update(id, {
       hits: post.hits + 1,
     });
-
+    post.hits += 1;
     return post;
   }
 

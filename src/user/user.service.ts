@@ -27,6 +27,7 @@ export class UserService {
     user.phone_number = phone_number;
     user.name = name;
     await this.usersRepository.save(user);
+    delete user.password;
     return user;
   }
 

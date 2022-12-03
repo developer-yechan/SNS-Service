@@ -15,7 +15,10 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
+import { commonError } from 'src/dto/error/errorResponse.dto';
 
 //postman으로 파일과 json 콘텐츠를 동시에 보낼 수 없어 file upload api는 따로 나눔
 @Controller('files')
@@ -44,7 +47,13 @@ export class FileController {
     summary: '파일 삭제 API',
     description: '파일을 s3 storage에서 삭제 합니다.',
   })
-  @ApiOkResponse({ description: '파일 삭제 성공' })
+  @ApiOkResponse({ description: 's3 이미지 파일 삭제 완료' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: commonError,
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
   DeleteFile(@Param('id') postId: number) {
     return this.fileService.deleteFile(postId);
   }

@@ -31,8 +31,8 @@ export class UserService {
     return user;
   }
 
-  findAll(): Promise<User[]> {
-    const users = this.usersRepository.find({
+  async findAll(): Promise<User[]> {
+    const users = await this.usersRepository.find({
       select: {
         id: true,
         email: true,
@@ -43,8 +43,8 @@ export class UserService {
     return users;
   }
 
-  findOne(id: number): Promise<User> {
-    return this.usersRepository.findOne({
+  async findOne(id: number): Promise<User> {
+    const user = await this.usersRepository.findOne({
       select: {
         id: true,
         email: true,
@@ -56,10 +56,15 @@ export class UserService {
         id,
       },
     });
+    console.log(user, 'user');
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
+    }
+    return user;
   }
 
-  findOneByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOne({
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.usersRepository.findOne({
       select: {
         id: true,
         name: true,

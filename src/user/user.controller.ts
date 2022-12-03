@@ -18,51 +18,61 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiResponse,
+  ApiUnauthorizedResponse,
   ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { User } from 'src/entity/user.entity';
-import { findUser, findUsers } from 'src/utils/swagger/userResponse';
-import { unAuthorized, badRequest } from 'src/utils/swagger/errorResponse';
+import {
+  createSuccess,
+  findUsersSuccess,
+  findUserSuccess,
+} from 'src/utils/swagger/userResponse';
+import { findUser, findUsers } from 'src/dto/user/userApiResponse.dto';
+import {
+  badRequestFail,
+  notFoundFail,
+  unAuthorizedFail,
+} from 'src/utils/swagger/errorResponse';
+import { unAuthorized } from 'src/dto/error/errorResponse.dto';
+
 @Controller('users')
 @ApiTags('유저 API')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @Post()
+
   @ApiOperation({ summary: '회원가입 API', description: '유저를 생성합니다.' })
-  @ApiCreatedResponse({ description: '회원가입 성공.', type: User })
-  @ApiBadRequestResponse({ description: 'Bad Request', type: badRequest })
+  @ApiExtraModels(User)
+  @ApiCreatedResponse(createSuccess)
+  @ApiBadRequestResponse(badRequestFail)
+  @Post()
   signUp(@Body() data: CreateUserDto) {
     return this.userService.create(data);
   }
-  @Get()
+
   @ApiOperation({
     summary: '유저 전체 조회 API',
     description: '유저 목록을 가져옵니다.',
   })
-  @ApiOkResponse({
-    description: '유저 목록 응답',
-    type: findUser,
-    isArray: true,
-  })
-  @ApiBadRequestResponse({ description: 'Bad Request', type: badRequest })
+  @ApiExtraModels(findUsers)
+  @ApiOkResponse(findUsersSuccess)
+  @ApiNotFoundResponse(notFoundFail)
+  @Get()
   getUsers() {
     return this.userService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/:id')
   @ApiOperation({
     summary: '유저 상세 조회 API',
     description: 'id에 해당하는 유저 정보를 가져옵니다.',
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-    type: unAuthorized,
-  })
-  @ApiOkResponse({ description: '해당 id 유저 정보 응답', type: findUsers })
-  @ApiBadRequestResponse({ description: 'Bad Request', type: badRequest })
+  @ApiExtraModels(unAuthorized)
+  @ApiOkResponse(findUserSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiNotFoundResponse(notFoundFail)
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
   getUser(@Param('id') id: number) {
     return this.userService.findOne(id);
   }
@@ -73,13 +83,11 @@ export class UserController {
     summary: '유저 정보 업데이트 API',
     description: 'id에 해당하는 유저 정보를 업데이트 합니다.',
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-    type: unAuthorized,
-  })
+  @ApiExtraModels(unAuthorized)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiOkResponse({ description: '회원 정보 수정 성공' })
-  @ApiBadRequestResponse({ description: 'Bad Request', type: badRequest })
+  @ApiBadRequestResponse(badRequestFail)
+  @ApiNotFoundResponse(notFoundFail)
   updateUser(@Request() req, @Body() data: UpdateUserDto) {
     return this.userService.update(req.user.userId, data);
   }
@@ -90,13 +98,10 @@ export class UserController {
     summary: '회원탈퇴 API',
     description: 'id에 해당하는 유저 정보를 삭제합니다.',
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-    type: unAuthorized,
-  })
+  @ApiExtraModels(unAuthorized)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiOkResponse({ description: '회원 탈퇴 성공' })
-  @ApiBadRequestResponse({ description: 'Bad Request', type: badRequest })
+  @ApiNotFoundResponse(notFoundFail)
   deleteUser(@Request() req) {
     return this.userService.remove(req.user.userId);
   }

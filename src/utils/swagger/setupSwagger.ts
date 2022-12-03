@@ -15,7 +15,7 @@ export function setupSwagger(app: INestApplication): void {
     .setVersion('1.0.0')
     .build();
 
-  const document = SwaggerModule.createDocument(app, options);
+  const document = SwaggerModule.createDocument(app, options, {});
   // api Docs 경로 설정
   SwaggerModule.setup('api-docs', app, document);
 }

@@ -21,6 +21,7 @@ export class User extends DateContent {
   email: string;
 
   @Column()
+  @ApiProperty({ description: 'password' })
   password: string;
 
   @Column()

@@ -64,6 +64,7 @@ export class PostService {
     post.content = content;
     post.user = user;
     await this.postRepository.save(post);
+    delete post.user;
     return post;
   }
 
@@ -215,6 +216,9 @@ export class PostService {
       .where('posts.id = :id', { id })
       .getRawOne();
 
+    if (!post) {
+      throw new NotFoundException('존재하지 않는 게시물입니다.');
+    }
     // 조회수 + 1
     await this.postRepository.update(id, {
       hits: post.hits + 1,

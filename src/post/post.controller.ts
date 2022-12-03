@@ -10,6 +10,7 @@ import {
   Delete,
   Bind,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePostDto } from 'src/dto/createPostDto';
 import { PostService } from './post.service';
@@ -20,7 +21,12 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
+import { commonError } from 'src/dto/error/errorResponse.dto';
+import { createPostType } from 'src/utils/swagger/postResponse';
+import { unAuthorizedFail } from 'src/utils/swagger/errorResponse';
 // import { Post } from 'src/entity/post.entity';
 @Controller('posts')
 @ApiTags('게시물 API')
@@ -33,7 +39,12 @@ export class PostController {
     summary: '게시물 생성 API',
     description: '게시물을 생성합니다.',
   })
-  @ApiCreatedResponse({ description: '게시물 생성 성공.' })
+  @ApiCreatedResponse({
+    description: '게시물 생성 성공.',
+    type: createPostType,
+  })
+  @ApiResponse(unAuthorizedFail)
+  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
   async createPost(@Body() data: CreatePostDto, @Request() req) {
     const post = await this.postService.create(data, req.user.userId);
     return post;
@@ -46,6 +57,8 @@ export class PostController {
     description: '게시물 목록을 가져옵니다.',
   })
   @ApiOkResponse({ description: '게시물 목록 응답' })
+  @ApiResponse(unAuthorizedFail)
+  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
   getPosts(
     @Query('orderBy') orderBy: string,
     @Query('order') order: 'DESC' | 'ASC',
@@ -63,6 +76,8 @@ export class PostController {
     description: 'id에 해당하는 게시물을 가져옵니다.',
   })
   @ApiOkResponse({ description: '해당 id 게시물 정보 응답' })
+  @ApiResponse(unAuthorizedFail)
+  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
   getPost(@Param('id') id: number) {
     return this.postService.findOne(id);
   }
@@ -74,6 +89,8 @@ export class PostController {
     description: 'id에 해당하는 게시물 정보를 업데이트합니다.',
   })
   @ApiOkResponse({ description: '게시물 업데이트 성공' })
+  @ApiResponse(unAuthorizedFail)
+  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
   updatePosts(@Body() data: UpdatePostDto, @Request() req) {
     return this.postService.update(data, req.user.userId);
   }
@@ -85,6 +102,8 @@ export class PostController {
     description: 'id에 해당하는 게시물을 삭제합니다.',
   })
   @ApiOkResponse({ description: '게시물 삭제 성공' })
+  @ApiResponse(unAuthorizedFail)
+  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
   deletePosts(@Param('id') id: number, @Request() req) {
     return this.postService.delete(id, req.user.userId);
   }

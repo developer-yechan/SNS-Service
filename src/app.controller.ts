@@ -10,7 +10,7 @@ import {
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/loginUserDto';
-import { badRequest } from 'src/utils/swagger/errorResponse';
+import { commonError } from 'src/dto/error/errorResponse.dto';
 @Controller()
 @ApiTags('로그인 API')
 export class AppController {
@@ -24,7 +24,7 @@ export class AppController {
     description: '로그인 성공 시 엑세스 토큰을 반환합니다.',
   })
   @ApiOkResponse({ description: '로그인 성공' })
-  @ApiBadRequestResponse({ description: 'Bad Request', type: badRequest })
+  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
   async login(@Request() req) {
     return this.authService.login(req.user);
   }

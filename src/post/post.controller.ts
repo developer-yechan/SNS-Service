@@ -25,8 +25,8 @@ import {
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { commonError } from 'src/dto/error/errorResponse.dto';
-import { createPostType } from 'src/utils/swagger/postResponse';
-import { unAuthorizedFail } from 'src/utils/swagger/errorResponse';
+import { createPostType } from 'src/utils/swagger/post/postResponse';
+import { unAuthorizedFail } from 'src/utils/swagger/user/errorResponse';
 // import { Post } from 'src/entity/post.entity';
 @Controller('posts')
 @ApiTags('게시물 API')

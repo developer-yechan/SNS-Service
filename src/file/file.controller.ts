@@ -17,8 +17,19 @@ import {
   ApiOkResponse,
   ApiResponse,
   ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
-import { commonError } from 'src/dto/error/errorResponse.dto';
+
+import {
+  createSuccess,
+  deleteSuccess,
+} from 'src/utils/swagger/file/successResponse';
+import {
+  badRequestFail,
+  unAuthorizedFail,
+  notFoundFail,
+} from 'src/utils/swagger/file/errorResponse';
 
 //postman으로 파일과 json 콘텐츠를 동시에 보낼 수 없어 file upload api는 따로 나눔
 @Controller('files')
@@ -33,7 +44,9 @@ export class FileController {
     summary: '파일 업로드 API',
     description: '파일을 s3 storage에 업로드 합니다.',
   })
-  @ApiCreatedResponse({ description: '파일 업로드 성공.' })
+  @ApiCreatedResponse(createSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiBadRequestResponse(badRequestFail)
   uploadFile(
     @Param('id') postId: number,
     @UploadedFiles() files: Express.MulterS3.File[],
@@ -47,13 +60,9 @@ export class FileController {
     summary: '파일 삭제 API',
     description: '파일을 s3 storage에서 삭제 합니다.',
   })
-  @ApiOkResponse({ description: 's3 이미지 파일 삭제 완료' })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-    type: commonError,
-  })
-  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
+  @ApiOkResponse(deleteSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiNotFoundResponse(notFoundFail)
   DeleteFile(@Param('id') postId: number) {
     return this.fileService.deleteFile(postId);
   }

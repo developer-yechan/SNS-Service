@@ -28,13 +28,13 @@ import {
   createSuccess,
   findUsersSuccess,
   findUserSuccess,
-} from 'src/utils/swagger/userResponse';
+} from 'src/utils/swagger/user/successResponse';
 import { findUser, findUsers } from 'src/dto/user/userApiResponse.dto';
 import {
   badRequestFail,
   notFoundFail,
   unAuthorizedFail,
-} from 'src/utils/swagger/errorResponse';
+} from 'src/utils/swagger/user/errorResponse';
 import { unAuthorized } from 'src/dto/error/errorResponse.dto';
 
 @Controller('users')

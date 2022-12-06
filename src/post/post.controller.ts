@@ -12,10 +12,10 @@ import {
   Query,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatePostDto } from 'src/dto/createPostDto';
+import { CreatePostDto } from 'src/dto/post/createPostDto';
 import { PostService } from './post.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UpdatePostDto } from 'src/dto/updatePostDto';
+import { UpdatePostDto } from 'src/dto/post/updatePostDto';
 import {
   ApiTags,
   ApiOperation,
@@ -25,7 +25,7 @@ import {
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { commonError } from 'src/dto/error/errorResponse.dto';
-import { createPostType } from 'src/utils/swagger/post/postResponse';
+import { createPostType } from 'src/utils/swagger/post/successResponse';
 import { unAuthorizedFail } from 'src/utils/swagger/user/errorResponse';
 // import { Post } from 'src/entity/post.entity';
 @Controller('posts')

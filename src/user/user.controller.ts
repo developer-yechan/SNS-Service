@@ -10,8 +10,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CreateUserDto } from 'src/dto/createUserDto';
-import { UpdateUserDto } from 'src/dto/updateUserDto';
+import { CreateUserDto } from 'src/dto/user/createUserDto';
+import { UpdateUserDto } from 'src/dto/user/updateUserDto';
 import { UserService } from './user.service';
 import {
   ApiTags,
@@ -29,7 +29,7 @@ import {
   findUsersSuccess,
   findUserSuccess,
 } from 'src/utils/swagger/user/successResponse';
-import { findUser, findUsers } from 'src/dto/user/userApiResponse.dto';
+import { findUser, findUsers } from 'src/dto/user/userResponse.dto';
 import {
   badRequestFail,
   notFoundFail,

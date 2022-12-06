@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsEmail, IsString, Matches } from 'class-validator';
-import { CreateUserDto } from './createUserDto';
+import { CreateUserDto } from '../user/createUserDto';
 import { ApiProperty } from '@nestjs/swagger';
 export class LoginUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ description: 'email' })

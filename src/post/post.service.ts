@@ -4,10 +4,10 @@ import { Post } from '../entity/post.entity';
 // import { PostImage } from 'src/entity/post-images.entity';
 import { Hashtag } from '../entity/hashtag.entity';
 import { DataSource, Repository, Raw } from 'typeorm';
-import { CreatePostDto } from '../dto/createPostDto';
+import { CreatePostDto } from '../dto/post/createPostDto';
 import { User } from 'src/entity/user.entity';
 import { PostLike } from 'src/entity/post-likes.entity';
-import { UpdatePostDto } from 'src/dto/updatePostDto';
+import { UpdatePostDto } from 'src/dto/post/updatePostDto';
 import { likes, hashtags } from 'src/query/subQuery';
 
 @Injectable()

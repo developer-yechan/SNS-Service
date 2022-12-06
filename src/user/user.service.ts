@@ -4,11 +4,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/dto/createUserDto';
+import { CreateUserDto } from 'src/dto/user/createUserDto';
 
 import * as bcrypt from 'bcrypt';
-import { LoginUserDto } from 'src/dto/loginUserDto';
-import { UpdateUserDto } from 'src/dto/updateUserDto';
+import { LoginUserDto } from 'src/dto/login/loginUserDto';
+import { UpdateUserDto } from 'src/dto/user/updateUserDto';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 

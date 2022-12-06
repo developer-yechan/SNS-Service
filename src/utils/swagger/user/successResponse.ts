@@ -1,6 +1,6 @@
 import { getSchemaPath } from '@nestjs/swagger';
 import { User } from 'src/entity/user.entity';
-import { findUser, findUsers } from 'src/dto/user/userApiResponse.dto';
+import { findUser, findUsers } from 'src/dto/user/userResponse.dto';
 
 // interface 나 type은 오류난다.
 

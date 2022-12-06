@@ -8,23 +8,32 @@ import {
   ApiOkResponse,
   ApiBody,
   ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/loginUserDto';
 import { commonError } from 'src/dto/error/errorResponse.dto';
+import { loginSuccess } from './utils/swagger/login/successResponse';
+import {
+  notFoundFail,
+  unAuthorizedFail,
+} from './utils/swagger/login/errorResponse';
 @Controller()
 @ApiTags('로그인 API')
 export class AppController {
   constructor(private authService: AuthService) {}
-  // AuthGuard('local')을 상속하는 LocalAuthGuard 클래스
-  @UseGuards(LocalAuthGuard)
-  @Post('auth/login')
+
   @ApiBody({ type: LoginUserDto })
   @ApiOperation({
     summary: '로그인 API',
     description: '로그인 성공 시 엑세스 토큰을 반환합니다.',
   })
-  @ApiOkResponse({ description: '로그인 성공' })
-  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
+  @ApiOkResponse(loginSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiNotFoundResponse(notFoundFail)
+  // AuthGuard('local')을 상속하는 LocalAuthGuard 클래스
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/login')
   async login(@Request() req) {
     return this.authService.login(req.user);
   }

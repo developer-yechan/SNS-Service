@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -11,13 +15,17 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.userService.findOneByEmail(email);
-    const validatePassword = await bcrypt.compare(password, user.password);
-    if (user && validatePassword) {
-      const { password, ...result } = user;
-      return result;
+    try {
+      const user = await this.userService.findOneByEmail(email);
+      const validatePassword = await bcrypt.compare(password, user.password);
+      if (user && validatePassword) {
+        const { password, ...result } = user;
+        return result;
+      }
+      return null;
+    } catch (err) {
+      throw new BadRequestException('존재하지 않는 유저입니다.');
     }
-    return null;
   }
 
   async login(user: any) {

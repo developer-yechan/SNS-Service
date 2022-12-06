@@ -1,4 +1,4 @@
-import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { getSchemaPath } from '@nestjs/swagger';
 import { User } from 'src/entity/user.entity';
 import { findUser, findUsers } from 'src/dto/user/userApiResponse.dto';
 

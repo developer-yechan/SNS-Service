@@ -84,7 +84,7 @@ export class UserService {
       image: data.image,
     });
     if (!updateUser.affected) {
-      throw new NotFoundException('이미 삭제된 유저입니다.');
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
     return '회원 정보 수정 성공';
   }
@@ -92,7 +92,7 @@ export class UserService {
   async remove(id: string): Promise<string> {
     const deleteUser = await this.usersRepository.delete(id);
     if (!deleteUser.affected) {
-      throw new NotFoundException('이미 삭제된 유저입니다.');
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
     return '회원 탈퇴 성공';
   }

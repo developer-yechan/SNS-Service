@@ -26,8 +26,10 @@ import {
 import { User } from 'src/entity/user.entity';
 import {
   createSuccess,
+  deleteSuccess,
   findUsersSuccess,
   findUserSuccess,
+  updateSuccess,
 } from 'src/utils/swagger/user/successResponse';
 import { findUser, findUsers } from 'src/dto/user/userResponse.dto';
 import {
@@ -35,7 +37,7 @@ import {
   notFoundFail,
   unAuthorizedFail,
 } from 'src/utils/swagger/user/errorResponse';
-import { unAuthorized } from 'src/dto/error/errorResponse.dto';
+import { commonError, unAuthorized } from 'src/dto/error/errorResponse.dto';
 
 @Controller('users')
 @ApiTags('유저 API')
@@ -43,7 +45,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({ summary: '회원가입 API', description: '유저를 생성합니다.' })
-  @ApiExtraModels(User)
+  @ApiExtraModels(User, commonError)
   @ApiCreatedResponse(createSuccess)
   @ApiBadRequestResponse(badRequestFail)
   @Post()
@@ -55,7 +57,7 @@ export class UserController {
     summary: '유저 전체 조회 API',
     description: '유저 목록을 가져옵니다.',
   })
-  @ApiExtraModels(findUsers)
+  @ApiExtraModels(findUsers, commonError)
   @ApiOkResponse(findUsersSuccess)
   @ApiNotFoundResponse(notFoundFail)
   @Get()
@@ -67,7 +69,7 @@ export class UserController {
     summary: '유저 상세 조회 API',
     description: 'id에 해당하는 유저 정보를 가져옵니다.',
   })
-  @ApiExtraModels(unAuthorized)
+  @ApiExtraModels(unAuthorized, commonError)
   @ApiOkResponse(findUserSuccess)
   @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiNotFoundResponse(notFoundFail)
@@ -77,31 +79,31 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch()
   @ApiOperation({
     summary: '유저 정보 업데이트 API',
     description: 'id에 해당하는 유저 정보를 업데이트 합니다.',
   })
-  @ApiExtraModels(unAuthorized)
+  @ApiExtraModels(unAuthorized, commonError)
   @ApiUnauthorizedResponse(unAuthorizedFail)
-  @ApiOkResponse({ description: '회원 정보 수정 성공' })
+  @ApiOkResponse(updateSuccess)
   @ApiBadRequestResponse(badRequestFail)
   @ApiNotFoundResponse(notFoundFail)
+  @UseGuards(JwtAuthGuard)
+  @Patch()
   updateUser(@Request() req, @Body() data: UpdateUserDto) {
     return this.userService.update(req.user.userId, data);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Delete()
   @ApiOperation({
     summary: '회원탈퇴 API',
     description: 'id에 해당하는 유저 정보를 삭제합니다.',
   })
-  @ApiExtraModels(unAuthorized)
+  @ApiExtraModels(unAuthorized, commonError)
+  @ApiOkResponse(deleteSuccess)
   @ApiUnauthorizedResponse(unAuthorizedFail)
-  @ApiOkResponse({ description: '회원 탈퇴 성공' })
   @ApiNotFoundResponse(notFoundFail)
+  @UseGuards(JwtAuthGuard)
+  @Delete()
   deleteUser(@Request() req) {
     return this.userService.remove(req.user.userId);
   }

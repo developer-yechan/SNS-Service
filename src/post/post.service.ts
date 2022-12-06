@@ -71,7 +71,14 @@ export class PostService {
   async update(data: UpdatePostDto, userId: number) {
     const { id, title, content, hashtags } = data;
 
-    const findPost = await this.findOne(id);
+    const findPost = await this.postRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!findPost) {
+      throw new NotFoundException('존재하지 않는 게시물입니다.');
+    }
     if (hashtags) {
       // 새로운 hashtag 인스턴스를 담아줄 배열
       let hashtagInstanceArr = [];
@@ -239,6 +246,6 @@ export class PostService {
     if (!deletePost.affected) {
       throw new NotFoundException('이미 삭제된 게시물 입니다.');
     }
-    return { message: '게시물 삭제 성공' };
+    return { message: '게시물 삭제 완료' };
   }
 }

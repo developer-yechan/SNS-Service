@@ -1,5 +1,6 @@
 import { PostImage } from 'src/entity/post-images.entity';
 import { getSchemaPath } from '@nestjs/swagger';
+import { uploadResponse } from 'src/dto/file/successResponse.dto';
 
 export const createSuccess = {
   description: '파일 s3 업로드 성공.',
@@ -14,7 +15,7 @@ export const createSuccess = {
         },
       ],
       schema: {
-        $ref: getSchemaPath(PostImage),
+        $ref: getSchemaPath(uploadResponse),
       },
     },
   },

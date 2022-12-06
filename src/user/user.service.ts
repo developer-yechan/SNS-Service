@@ -75,7 +75,7 @@ export class UserService {
       },
     });
   }
-  async update(id: number, data: UpdateUserDto): Promise<string> {
+  async update(id: number, data: UpdateUserDto) {
     const updateUser = await this.usersRepository.update(id, {
       email: data.email,
       password: data.password,
@@ -86,14 +86,18 @@ export class UserService {
     if (!updateUser.affected) {
       throw new NotFoundException('존재하지 않는 유저입니다.');
     }
-    return '회원 정보 수정 성공';
+    return {
+      message: '회원 정보 업데이트 완료',
+    };
   }
 
-  async remove(id: string): Promise<string> {
+  async remove(id: string) {
     const deleteUser = await this.usersRepository.delete(id);
     if (!deleteUser.affected) {
       throw new NotFoundException('존재하지 않는 유저입니다.');
     }
-    return '회원 탈퇴 성공';
+    return {
+      message: '회원 탈퇴 완료',
+    };
   }
 }

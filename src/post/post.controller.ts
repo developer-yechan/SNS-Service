@@ -21,13 +21,30 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiResponse,
+  ApiUnauthorizedResponse,
   ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiExtraModels,
 } from '@nestjs/swagger';
-import { commonError } from 'src/dto/error/errorResponse.dto';
-import { createPostType } from 'src/utils/swagger/post/successResponse';
-import { unAuthorizedFail } from 'src/utils/swagger/user/errorResponse';
-// import { Post } from 'src/entity/post.entity';
+import {
+  createSuccess,
+  deleteSuccess,
+  findPostsSuccess,
+  findPostSuccess,
+  updateSuccess,
+} from 'src/utils/swagger/post/successResponse';
+import {
+  unAuthorizedFail,
+  notFoundFail,
+  badRequestFail,
+} from 'src/utils/swagger/post/errorResponse';
+import {
+  createResponse,
+  findPosts,
+  findPost,
+} from 'src/dto/post/successResponse.dto';
+import { commonError, unAuthorized } from 'src/dto/error/errorResponse.dto';
+
 @Controller('posts')
 @ApiTags('게시물 API')
 export class PostController {
@@ -39,12 +56,10 @@ export class PostController {
     summary: '게시물 생성 API',
     description: '게시물을 생성합니다.',
   })
-  @ApiCreatedResponse({
-    description: '게시물 생성 성공.',
-    type: createPostType,
-  })
-  @ApiResponse(unAuthorizedFail)
-  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
+  @ApiExtraModels(createResponse, unAuthorized, commonError)
+  @ApiCreatedResponse(createSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiBadRequestResponse(badRequestFail)
   async createPost(@Body() data: CreatePostDto, @Request() req) {
     const post = await this.postService.create(data, req.user.userId);
     return post;
@@ -56,9 +71,10 @@ export class PostController {
     summary: '게시물 전체 조회 API',
     description: '게시물 목록을 가져옵니다.',
   })
-  @ApiOkResponse({ description: '게시물 목록 응답' })
-  @ApiResponse(unAuthorizedFail)
-  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
+  @ApiExtraModels(findPosts, unAuthorized, commonError)
+  @ApiOkResponse(findPostsSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiNotFoundResponse(notFoundFail)
   getPosts(
     @Query('orderBy') orderBy: string,
     @Query('order') order: 'DESC' | 'ASC',
@@ -69,15 +85,16 @@ export class PostController {
     return this.postService.findAll(orderBy, order, search, filter, cnt);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/:id')
   @ApiOperation({
     summary: '게시물 상세 조회 API',
     description: 'id에 해당하는 게시물을 가져옵니다.',
   })
-  @ApiOkResponse({ description: '해당 id 게시물 정보 응답' })
-  @ApiResponse(unAuthorizedFail)
-  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
+  @ApiExtraModels(findPost, unAuthorized, commonError)
+  @ApiOkResponse(findPostSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiNotFoundResponse(notFoundFail)
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
   getPost(@Param('id') id: number) {
     return this.postService.findOne(id);
   }
@@ -88,9 +105,11 @@ export class PostController {
     summary: '게시물 업데이트 API',
     description: 'id에 해당하는 게시물 정보를 업데이트합니다.',
   })
-  @ApiOkResponse({ description: '게시물 업데이트 성공' })
-  @ApiResponse(unAuthorizedFail)
-  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
+  @ApiExtraModels(unAuthorized, commonError)
+  @ApiOkResponse(updateSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiBadRequestResponse(badRequestFail)
+  @ApiNotFoundResponse(notFoundFail)
   updatePosts(@Body() data: UpdatePostDto, @Request() req) {
     return this.postService.update(data, req.user.userId);
   }
@@ -101,9 +120,10 @@ export class PostController {
     summary: '게시물 삭제 API',
     description: 'id에 해당하는 게시물을 삭제합니다.',
   })
-  @ApiOkResponse({ description: '게시물 삭제 성공' })
-  @ApiResponse(unAuthorizedFail)
-  @ApiBadRequestResponse({ description: 'Bad Request', type: commonError })
+  @ApiExtraModels(unAuthorized, commonError)
+  @ApiOkResponse(deleteSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
+  @ApiNotFoundResponse(notFoundFail)
   deletePosts(@Param('id') id: number, @Request() req) {
     return this.postService.delete(id, req.user.userId);
   }

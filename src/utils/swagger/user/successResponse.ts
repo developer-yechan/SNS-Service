@@ -62,3 +62,25 @@ export const findUserSuccess = {
     },
   },
 };
+
+export const updateSuccess = {
+  description: '회원 정보 업데이트 성공',
+  content: {
+    'application/json': {
+      example: {
+        message: '회원 정보 업데이트 완료',
+      },
+    },
+  },
+};
+
+export const deleteSuccess = {
+  description: '회원 탈퇴 성공',
+  content: {
+    'application/json': {
+      example: {
+        message: '회원 탈퇴 완료',
+      },
+    },
+  },
+};

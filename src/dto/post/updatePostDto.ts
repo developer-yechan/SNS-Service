@@ -1,8 +1,22 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { CreatePostDto } from './createPostDto';
-
-export class UpdatePostDto extends PartialType(CreatePostDto) {
+import { ApiProperty } from '@nestjs/swagger';
+export class UpdatePostDto {
   @IsNumber()
   id: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  title: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  content: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  hashtags: string;
 }

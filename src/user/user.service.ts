@@ -4,11 +4,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/dto/createUserDto';
+import { CreateUserDto } from 'src/dto/user/createUser.dto';
 
 import * as bcrypt from 'bcrypt';
-import { LoginUserDto } from 'src/dto/loginUserDto';
-import { UpdateUserDto } from 'src/dto/updateUserDto';
+import { LoginUserDto } from 'src/dto/login/loginUser.dto';
+import { UpdateUserDto } from 'src/dto/user/updateUser.dto';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 
@@ -27,11 +27,12 @@ export class UserService {
     user.phone_number = phone_number;
     user.name = name;
     await this.usersRepository.save(user);
+    delete user.password;
     return user;
   }
 
-  findAll(): Promise<User[]> {
-    const users = this.usersRepository.find({
+  async findAll(): Promise<User[]> {
+    const users = await this.usersRepository.find({
       select: {
         id: true,
         email: true,
@@ -42,8 +43,8 @@ export class UserService {
     return users;
   }
 
-  findOne(id: number): Promise<User> {
-    return this.usersRepository.findOne({
+  async findOne(id: number): Promise<User> {
+    const user = await this.usersRepository.findOne({
       select: {
         id: true,
         email: true,
@@ -55,10 +56,14 @@ export class UserService {
         id,
       },
     });
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
+    }
+    return user;
   }
 
-  findOneByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOne({
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.usersRepository.findOne({
       select: {
         id: true,
         name: true,
@@ -69,7 +74,7 @@ export class UserService {
       },
     });
   }
-  async update(id: number, data: UpdateUserDto): Promise<string> {
+  async update(id: number, data: UpdateUserDto) {
     const updateUser = await this.usersRepository.update(id, {
       email: data.email,
       password: data.password,
@@ -78,16 +83,20 @@ export class UserService {
       image: data.image,
     });
     if (!updateUser.affected) {
-      throw new NotFoundException('이미 삭제된 유저입니다.');
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
-    return '회원 정보 수정 성공';
+    return {
+      message: '회원 정보 업데이트 완료',
+    };
   }
 
-  async remove(id: string): Promise<string> {
+  async remove(id: string) {
     const deleteUser = await this.usersRepository.delete(id);
     if (!deleteUser.affected) {
-      throw new NotFoundException('이미 삭제된 유저입니다.');
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
-    return '회원 탈퇴 성공';
+    return {
+      message: '회원 탈퇴 완료',
+    };
   }
 }

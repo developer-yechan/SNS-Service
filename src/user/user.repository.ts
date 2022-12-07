@@ -3,11 +3,11 @@ import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/dto/createUserDto';
+import { CreateUserDto } from 'src/dto/user/createUser.dto';
 
 import * as bcrypt from 'bcrypt';
-import { LoginUserDto } from 'src/dto/loginUserDto';
-import { UpdateUserDto } from 'src/dto/updateUserDto';
+import { LoginUserDto } from 'src/dto/login/loginUser.dto';
+import { UpdateUserDto } from 'src/dto/user/updateUser.dto';
 
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {

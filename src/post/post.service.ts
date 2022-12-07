@@ -4,10 +4,10 @@ import { Post } from '../entity/post.entity';
 // import { PostImage } from 'src/entity/post-images.entity';
 import { Hashtag } from '../entity/hashtag.entity';
 import { DataSource, Repository, Raw } from 'typeorm';
-import { CreatePostDto } from '../dto/createPostDto';
+import { CreatePostDto } from '../dto/post/createPost.dto';
 import { User } from 'src/entity/user.entity';
 import { PostLike } from 'src/entity/post-likes.entity';
-import { UpdatePostDto } from 'src/dto/updatePostDto';
+import { UpdatePostDto } from 'src/dto/post/updatePost.dto';
 import { likes, hashtags } from 'src/query/subQuery';
 
 @Injectable()
@@ -64,13 +64,21 @@ export class PostService {
     post.content = content;
     post.user = user;
     await this.postRepository.save(post);
+    delete post.user;
     return post;
   }
 
   async update(data: UpdatePostDto, userId: number) {
     const { id, title, content, hashtags } = data;
 
-    const findPost = await this.findOne(id);
+    const findPost = await this.postRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!findPost) {
+      throw new NotFoundException('존재하지 않는 게시물입니다.');
+    }
     if (hashtags) {
       // 새로운 hashtag 인스턴스를 담아줄 배열
       let hashtagInstanceArr = [];
@@ -215,6 +223,9 @@ export class PostService {
       .where('posts.id = :id', { id })
       .getRawOne();
 
+    if (!post) {
+      throw new NotFoundException('존재하지 않는 게시물입니다.');
+    }
     // 조회수 + 1
     await this.postRepository.update(id, {
       hits: post.hits + 1,
@@ -235,6 +246,6 @@ export class PostService {
     if (!deletePost.affected) {
       throw new NotFoundException('이미 삭제된 게시물 입니다.');
     }
-    return { message: '게시물 삭제 성공' };
+    return { message: '게시물 삭제 완료' };
   }
 }

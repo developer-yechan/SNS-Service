@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
@@ -10,9 +11,11 @@ import { Post } from './post.entity';
 @Entity('hashtags')
 export class Hashtag {
   @PrimaryGeneratedColumn()
+  @ApiProperty()
   id: number;
 
   @Column()
+  @ApiProperty()
   hashtag: string;
 
   @ManyToMany(() => Post, (posts) => posts.id, {

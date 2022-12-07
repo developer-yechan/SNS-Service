@@ -28,10 +28,11 @@ export class PostLikesService {
       },
     });
     if (!checkPost) {
-      throw new NotFoundException('존재하지 않는 게시물 입니다.');
+      throw new NotFoundException('존재하지 않는 게시물입니다.');
     }
     const postLike = await this.postLikeRepository
       .createQueryBuilder()
+      .select(['id', '"postId" AS postId', '"userId AS userId'])
       .where('"userId" = :userId and "postId" = :postId', { userId, postId })
       .getRawOne();
     if (postLike) {
@@ -45,17 +46,31 @@ export class PostLikesService {
     like.user = user;
     like.post = post;
     await this.postLikeRepository.save(like);
-    return like;
+    return {
+      message: '좋아요 처리 완료',
+    };
   }
 
   async delete(postId: number, userId: number) {
+    // 게시물 없는 경우 예외처리
+    const checkPost = await this.postRepository.findOne({
+      select: {
+        id: true,
+      },
+      where: {
+        id: postId,
+      },
+    });
+    if (!checkPost) {
+      throw new NotFoundException('존재하지 않는 게시물입니다.');
+    }
     const deleteLike = await this.postLikeRepository
       .createQueryBuilder()
       .delete()
       .where('postId = :postId and userId = :userId', { postId, userId })
       .execute();
     if (!deleteLike.affected) {
-      throw new NotFoundException('이미 좋아요가 취소 되었습니다.');
+      throw new BadRequestException('이미 좋아요가 취소된 게시물입니다.');
     }
     return { message: '좋아요 취소 완료' };
   }

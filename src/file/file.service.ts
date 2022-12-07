@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostImage } from 'src/entity/post-images.entity';
 import { Post } from 'src/entity/post.entity';
 import { Repository } from 'typeorm';
-import { DeleteObjectsCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectsCommand,
+  S3Client,
+  S3ServiceException,
+} from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { s3ClientService } from 'src/utils/s3Client/s3Client.service';
 @Injectable()
@@ -15,7 +19,7 @@ export class FileService {
     private s3ClientService: s3ClientService,
   ) {}
 
-  uploadFile(postId: number, files: Express.MulterS3.File[]) {
+  async uploadFile(postId: number, files: Express.MulterS3.File[]) {
     if (!files) {
       throw new BadRequestException('파일이 존재하지 않습니다.');
     }
@@ -25,10 +29,18 @@ export class FileService {
       const postImage = new PostImage();
       postImage.imageUrl = file.location;
       postImage.post = post;
-      this.postImageRepository.save(postImage);
+      await this.postImageRepository.save(postImage);
     }
-
-    return files;
+    const postImages = await this.postImageRepository
+      .createQueryBuilder('postImages')
+      .select([
+        'postImages.id AS id',
+        'postImages.imageUrl AS imageUrl',
+        'postImages.postId AS postId',
+      ])
+      .where('postImages.postId = :postId', { postId })
+      .getRawMany();
+    return postImages;
   }
 
   async deleteFile(postId: number) {
@@ -38,6 +50,12 @@ export class FileService {
       .select('"imageUrl" AS imageUrl')
       .where('"postId" = :postId', { postId })
       .getRawMany();
+
+    if (images.length === 0) {
+      throw new NotFoundException(
+        `postId가 ${postId}인 image가 존재하지 않습니다.`,
+      );
+    }
     const deleteObject = [];
     for (const image of images) {
       const url = image.imageurl.split('/'); // db에 저장된 imageUrl을 가져옴
@@ -50,20 +68,23 @@ export class FileService {
         Objects: deleteObject,
       },
     };
-    s3.send(new DeleteObjectsCommand(params), function (err, data) {
-      if (err) {
-        console.log('aws image delete error');
-        console.log(err, err.stack);
-      } else {
-        console.log('aws delete success');
-      }
-    });
-
+    try {
+      await s3.send(new DeleteObjectsCommand(params));
+    } catch (err) {
+      console.log(err);
+      throw new S3ServiceException({
+        $fault: 'client',
+        $metadata: {
+          httpStatusCode: 400,
+        },
+        name: 'aws s3 delete error',
+      });
+    }
     await this.postImageRepository
       .createQueryBuilder()
       .delete()
       .where('postId = :postId', { postId })
       .execute();
-    return 's3 이미지 파일 삭제 완료';
+    return { message: 's3 이미지 파일 삭제 완료' };
   }
 }

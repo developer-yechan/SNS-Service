@@ -1,5 +1,5 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { CreatePostDto } from './createPostDto';
+import { CreatePostDto } from './createPost.dto';
 import { ApiProperty } from '@nestjs/swagger';
 export class UpdatePostDto {
   @IsNumber()

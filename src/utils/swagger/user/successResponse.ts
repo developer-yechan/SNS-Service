@@ -8,17 +8,15 @@ export const createSuccess = {
   description: '회원가입 성공.',
   content: {
     'application/json': {
-      example: [
-        {
-          email: 'a@naver.com',
-          phone_number: '010-1234-1234',
-          name: '민수',
-          image: null,
-          createdAt: '2022-12-03T06:06:52.791Z',
-          updatedAt: '2022-12-03T06:06:52.791Z',
-          id: 11,
-        },
-      ],
+      example: {
+        email: 'a@naver.com',
+        phone_number: '010-1234-1234',
+        name: '민수',
+        image: null,
+        createdAt: '2022-12-03T06:06:52.791Z',
+        updatedAt: '2022-12-03T06:06:52.791Z',
+        id: 11,
+      },
       schema: {
         $ref: getSchemaPath(User),
       },

@@ -10,8 +10,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CreateUserDto } from 'src/dto/user/createUserDto';
-import { UpdateUserDto } from 'src/dto/user/updateUserDto';
+import { CreateUserDto } from 'src/dto/user/createUser.dto';
+import { UpdateUserDto } from 'src/dto/user/updateUser.dto';
 import { UserService } from './user.service';
 import {
   ApiTags,
@@ -22,6 +22,7 @@ import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiExtraModels,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { User } from 'src/entity/user.entity';
 import {
@@ -57,9 +58,12 @@ export class UserController {
     summary: '유저 전체 조회 API',
     description: '유저 목록을 가져옵니다.',
   })
-  @ApiExtraModels(findUsers, commonError)
+  @ApiBearerAuth('token')
+  @ApiExtraModels(findUsers, unAuthorized, commonError)
   @ApiOkResponse(findUsersSuccess)
+  @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiNotFoundResponse(notFoundFail)
+  @UseGuards(JwtAuthGuard)
   @Get()
   getUsers() {
     return this.userService.findAll();
@@ -69,7 +73,8 @@ export class UserController {
     summary: '유저 상세 조회 API',
     description: 'id에 해당하는 유저 정보를 가져옵니다.',
   })
-  @ApiExtraModels(unAuthorized, commonError)
+  @ApiBearerAuth('token')
+  @ApiExtraModels(findUser, unAuthorized, commonError)
   @ApiOkResponse(findUserSuccess)
   @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiNotFoundResponse(notFoundFail)
@@ -83,6 +88,7 @@ export class UserController {
     summary: '유저 정보 업데이트 API',
     description: 'id에 해당하는 유저 정보를 업데이트 합니다.',
   })
+  @ApiBearerAuth('token')
   @ApiExtraModels(unAuthorized, commonError)
   @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiOkResponse(updateSuccess)
@@ -98,6 +104,7 @@ export class UserController {
     summary: '회원탈퇴 API',
     description: 'id에 해당하는 유저 정보를 삭제합니다.',
   })
+  @ApiBearerAuth('token')
   @ApiExtraModels(unAuthorized, commonError)
   @ApiOkResponse(deleteSuccess)
   @ApiUnauthorizedResponse(unAuthorizedFail)

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateUserDto } from './createUserDto';
+import { CreateUserDto } from './createUser.dto';
 import {
   IsEmail,
   IsMobilePhone,

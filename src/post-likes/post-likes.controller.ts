@@ -17,6 +17,7 @@ import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiExtraModels,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import {
   createSuccess,
@@ -38,6 +39,7 @@ export class PostLikesController {
     summary: '게시물 좋아요 생성 API',
     description: 'postId에 해당하는 게시물을 userId로 좋아요 처리합니다.',
   })
+  @ApiBearerAuth('token')
   @ApiCreatedResponse(createSuccess)
   @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiNotFoundResponse(notFoundFail)
@@ -53,6 +55,7 @@ export class PostLikesController {
     description:
       'userId로 좋아요 처리한 postId에 해당하는 게시물의 좋아요를 취소 합니다.',
   })
+  @ApiBearerAuth('token')
   @ApiCreatedResponse(deleteSuccess)
   @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiNotFoundResponse(notFoundFail)

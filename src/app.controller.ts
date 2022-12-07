@@ -12,7 +12,7 @@ import {
   ApiNotFoundResponse,
   ApiExtraModels,
 } from '@nestjs/swagger';
-import { LoginUserDto } from './dto/login/loginUserDto';
+import { LoginUserDto } from './dto/login/loginUser.dto';
 import { commonError } from 'src/dto/error/errorResponse.dto';
 import { loginSuccess } from './utils/swagger/login/successResponse';
 import {

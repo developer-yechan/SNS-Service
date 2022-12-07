@@ -3,7 +3,7 @@ import {
   createResponse,
   findPosts,
   findPost,
-} from 'src/dto/post/successResponse.dto';
+} from 'src/dto/post/postResponse.dto';
 
 export const createSuccess = {
   description: '게시물 생성 성공.',

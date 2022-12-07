@@ -20,6 +20,7 @@ import {
   ApiUnauthorizedResponse,
   ApiNotFoundResponse,
   ApiExtraModels,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 
 import {
@@ -40,17 +41,18 @@ import { uploadResponse } from 'src/dto/file/successResponse.dto';
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/images/:id')
-  @UseInterceptors(FilesInterceptor('file'))
   @ApiOperation({
     summary: '파일 업로드 API',
     description: '파일을 s3 storage에 업로드 합니다.',
   })
+  @ApiBearerAuth('token')
   @ApiExtraModels(uploadResponse)
   @ApiCreatedResponse(createSuccess)
   @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiBadRequestResponse(badRequestFail)
+  @UseGuards(JwtAuthGuard)
+  @Post('/images/:id')
+  @UseInterceptors(FilesInterceptor('file'))
   uploadFile(
     @Param('id') postId: number,
     @UploadedFiles() files: Express.MulterS3.File[],
@@ -58,15 +60,16 @@ export class FileController {
     return this.fileService.uploadFile(postId, files);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Delete('/images/:id')
   @ApiOperation({
     summary: '파일 삭제 API',
     description: '파일을 s3 storage에서 삭제 합니다.',
   })
+  @ApiBearerAuth('token')
   @ApiOkResponse(deleteSuccess)
   @ApiUnauthorizedResponse(unAuthorizedFail)
   @ApiNotFoundResponse(notFoundFail)
+  @UseGuards(JwtAuthGuard)
+  @Delete('/images/:id')
   DeleteFile(@Param('id') postId: number) {
     return this.fileService.deleteFile(postId);
   }

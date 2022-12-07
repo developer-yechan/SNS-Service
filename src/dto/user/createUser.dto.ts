@@ -12,7 +12,7 @@ import { IsEqualTo } from 'src/decorator/isEqualTo.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
-  //swagger api docs request body와 CreateUserDto schema 부분을 @ApiProperty로 작성
+  //swagger api docs request body example과 schema를 @ApiProperty로 작성
   @ApiProperty({ description: 'email' })
   @IsEmail()
   readonly email: string;

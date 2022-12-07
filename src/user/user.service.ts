@@ -56,7 +56,6 @@ export class UserService {
         id,
       },
     });
-    console.log(user, 'user');
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저입니다.');
     }

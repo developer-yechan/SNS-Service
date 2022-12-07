@@ -33,7 +33,7 @@ import {
   notFoundFail,
 } from 'src/utils/swagger/file/errorResponse';
 import { PostImage } from 'src/entity/post-images.entity';
-import { uploadResponse } from 'src/dto/file/successResponse.dto';
+import { uploadResponse } from 'src/dto/file/fileResponse.dto';
 
 //postman으로 파일과 json 콘텐츠를 동시에 보낼 수 없어 file upload api는 따로 나눔
 @Controller('files')

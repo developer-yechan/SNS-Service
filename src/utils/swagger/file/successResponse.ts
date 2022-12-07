@@ -1,6 +1,6 @@
 import { PostImage } from 'src/entity/post-images.entity';
 import { getSchemaPath } from '@nestjs/swagger';
-import { uploadResponse } from 'src/dto/file/successResponse.dto';
+import { uploadResponse } from 'src/dto/file/fileResponse.dto';
 
 export const createSuccess = {
   description: '파일 s3 업로드 성공.',

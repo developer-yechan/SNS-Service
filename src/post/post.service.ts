@@ -70,12 +70,12 @@ export class PostService {
 
   async update(data: UpdatePostDto, userId: number) {
     const { id, title, content, hashtags } = data;
+    // getOne은 entity 반환 getRawOne은 raw data 반환 여기서는 기존 post entity에 새로운 hashtag를 맵핑 해줘야 하므로 getOne 사용
+    const findPost = await this.postRepository
+      .createQueryBuilder()
+      .where('id = :id and "userId" = :userId', { id, userId })
+      .getOne();
 
-    const findPost = await this.postRepository.findOne({
-      where: {
-        id,
-      },
-    });
     if (!findPost) {
       throw new NotFoundException('존재하지 않는 게시물입니다.');
     }
@@ -103,6 +103,9 @@ export class PostService {
         for (const newHashtag of newHashtagArr) {
           const hashtagEntity = new Hashtag();
           hashtagEntity.hashtag = newHashtag;
+
+          await this.hashtagRepository.save(hashtagEntity);
+
           hashtagInstanceArr.push(hashtagEntity);
         }
       }
@@ -113,10 +116,13 @@ export class PostService {
       await this.postRepository.save(findPost);
     }
     // hashtag를 제외한 나머지 속성 update
-    const updatePost = await this.postRepository.update(id, {
-      title,
-      content,
-    });
+    const updatePost = await this.postRepository
+      .createQueryBuilder()
+      .update()
+      .set({ title, content })
+      .where('id = :id and userId = :userId', { id, userId })
+      .execute();
+
     // 게시물 삭제된 경우 예외처리
     if (!updatePost.affected) {
       throw new NotFoundException('이미 삭제된 게시물입니다.');

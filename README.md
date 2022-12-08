@@ -1,5 +1,15 @@
 # SNS API service
 
+## 목차
+
+[주요 기능](#주요-기능)
+
+[ERD](#erd)
+
+[API Docs](#api-docs)
+
+[기술 스택](#기술-스택)
+
 ## 주요 기능
 
 ### 1. 유저 관리
@@ -49,3 +59,12 @@
 
 
 ## API Docs
+
+
+npm start 후 http://localhost:3000/api-docs   
+or   
+[sns-service-swagger.pdf](https://github.com/developer-yechan/SNS-Service/files/10183084/sns-service-swagger.pdf)
+
+
+## 기술 스택
+### Nestjs, Typescript, Postgresql, Typeorm, Swagger

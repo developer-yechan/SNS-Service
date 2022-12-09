@@ -40,8 +40,9 @@ export class PostService {
           // 매 루프 마다 새로운 hashtag 객체 생성 --> 이렇게 안하면 매 루프 마다 hashtag 정보 덮어씌워짐
           const hashtagEntity = new Hashtag();
           hashtagEntity.hashtag = hashtag;
+          //hashtag와 post는 ManyToMany 관계라 cascade 옵션 true 줘서 굳이 hashtagRepository 호출 안해도 됨
+          // await this.hashtagRepository.save(hashtagEntity);
 
-          await this.hashtagRepository.save(hashtagEntity);
           // ManyToMany table에 삽입을 위해 hashtagInstanceArr 배열에 hashtag 객체 push
           hashtagInstanceArr.push(hashtagEntity);
           // 이미 hashtag table에 저장된 hashtag들  ManyToMany table에 삽입을 위한 로직
@@ -103,9 +104,8 @@ export class PostService {
         for (const newHashtag of newHashtagArr) {
           const hashtagEntity = new Hashtag();
           hashtagEntity.hashtag = newHashtag;
-
-          await this.hashtagRepository.save(hashtagEntity);
-
+          //hashtag와 post는 ManyToMany 관계라 cascade 옵션 true 줘서 굳이 hashtagRepository 호출 안해도 됨
+          // await this.hashtagRepository.save(hashtagEntity);
           hashtagInstanceArr.push(hashtagEntity);
         }
       }

@@ -3,12 +3,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Hashtag } from 'src/entity/hashtag.entity';
 import { PostImage } from 'src/entity/post-images.entity';
 import { Post } from 'src/entity/post.entity';
+import { TypeOrmExModule } from 'src/module/typeorm-ex.module';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
 
 @Module({
   //InjectRepository를 위해  forFeature에 entity 추가해야함
-  imports: [TypeOrmModule.forFeature([Post, Hashtag, PostImage])],
+  imports: [
+    TypeOrmModule.forFeature([Post, Hashtag, PostImage]),
+    TypeOrmExModule.forCustomRepository([Post]),
+  ],
   controllers: [PostController],
   providers: [PostService],
   exports: [PostService],

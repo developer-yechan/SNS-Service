@@ -11,11 +11,14 @@ import {
 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { s3ClientService } from 'src/utils/s3Client/s3Client.service';
+import { FileRepository } from './file.repository';
+import { PostRepository } from 'src/post/post.repository';
 @Injectable()
 export class FileService {
   constructor(
     @InjectRepository(PostImage)
-    private postImageRepository: Repository<PostImage>,
+    private fileRepository: FileRepository,
+    private postRepository: PostRepository,
     private s3ClientService: s3ClientService,
   ) {}
 
@@ -23,34 +26,16 @@ export class FileService {
     if (!files) {
       throw new BadRequestException('파일이 존재하지 않습니다.');
     }
-    const post = new Post();
-    post.id = postId;
-    for (const file of files) {
-      const postImage = new PostImage();
-      postImage.imageUrl = file.location;
-      postImage.post = post;
-      await this.postImageRepository.save(postImage);
+    const post = this.postRepository.findPost(postId);
+    if (!post) {
+      throw new NotFoundException('게시물이 존재하지 않습니다.');
     }
-    const postImages = await this.postImageRepository
-      .createQueryBuilder('postImages')
-      .select([
-        'postImages.id AS id',
-        'postImages.imageUrl AS imageUrl',
-        'postImages.postId AS postId',
-      ])
-      .where('postImages.postId = :postId', { postId })
-      .getRawMany();
-    return postImages;
+    const fileUpload = this.fileRepository.createPostImage(postId, files);
+    return fileUpload;
   }
-
   async deleteFile(postId: number) {
     const s3 = this.s3ClientService.s3();
-    const images = await this.postImageRepository
-      .createQueryBuilder()
-      .select('"imageUrl" AS imageUrl')
-      .where('"postId" = :postId', { postId })
-      .getRawMany();
-
+    const images = await this.fileRepository.findPostImages(postId);
     if (images.length === 0) {
       throw new NotFoundException(
         `postId가 ${postId}인 image가 존재하지 않습니다.`,
@@ -80,11 +65,7 @@ export class FileService {
         name: 'aws s3 delete error',
       });
     }
-    await this.postImageRepository
-      .createQueryBuilder()
-      .delete()
-      .where('postId = :postId', { postId })
-      .execute();
-    return { message: 's3 이미지 파일 삭제 완료' };
+    const postImageDelete = this.fileRepository.deletePostImage(postId);
+    return postImageDelete;
   }
 }

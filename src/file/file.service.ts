@@ -16,7 +16,6 @@ import { PostRepository } from 'src/post/post.repository';
 @Injectable()
 export class FileService {
   constructor(
-    @InjectRepository(PostImage)
     private fileRepository: FileRepository,
     private postRepository: PostRepository,
     private s3ClientService: s3ClientService,

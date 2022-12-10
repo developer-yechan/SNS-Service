@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { FileService } from './file.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerOptionsFactory } from 'src/utils/multer.options';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -20,7 +19,6 @@ import { PostRepository } from 'src/post/post.repository';
       useFactory: multerOptionsFactory,
       inject: [s3ClientService],
     }),
-    TypeOrmModule.forFeature([Post, PostImage]),
     TypeOrmExModule.forCustomRepository([FileRepository, PostRepository]),
     s3ClientModule,
   ],

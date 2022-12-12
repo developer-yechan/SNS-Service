@@ -3,12 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PostLike } from 'src/entity/post-likes.entity';
-import { Post } from 'src/entity/post.entity';
 import { PostRepository } from 'src/post/post.repository';
-import { Repository } from 'typeorm';
-import { User } from '../entity/user.entity';
 import { postLikeRepository } from './post-likes.repository';
 
 @Injectable()

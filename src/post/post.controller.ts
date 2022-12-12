@@ -8,9 +8,7 @@ import {
   Param,
   Patch,
   Delete,
-  Bind,
   Query,
-  NotFoundException,
 } from '@nestjs/common';
 import { CreatePostDto } from 'src/dto/post/createPost.dto';
 import { PostService } from './post.service';

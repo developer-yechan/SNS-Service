@@ -51,7 +51,7 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findUserByEmail(email: string): Promise<User> {
     const user = await this.findOne({
       select: {
         id: true,
@@ -81,7 +81,7 @@ export class UserRepository extends Repository<User> {
     };
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: number) {
     const user = await this.delete(id);
     if (!user.affected) {
       throw new NotFoundException('존재하지 않는 유저입니다.');

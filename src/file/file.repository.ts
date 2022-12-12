@@ -1,7 +1,6 @@
 import { CustomRepository } from 'src/decorator/typeorm-ex.decorator';
 import { PostImage } from 'src/entity/post-images.entity';
 import { Repository } from 'typeorm';
-import { BadRequestException } from '@nestjs/common';
 import { Post } from 'src/entity/post.entity';
 
 @CustomRepository(PostImage)

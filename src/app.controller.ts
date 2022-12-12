@@ -1,5 +1,4 @@
-import { Controller, Request, Get, Post, UseGuards } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Request, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth/auth.service';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import {
@@ -7,13 +6,11 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiBody,
-  ApiBadRequestResponse,
   ApiUnauthorizedResponse,
   ApiNotFoundResponse,
   ApiExtraModels,
 } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/login/loginUser.dto';
-import { commonError } from 'src/dto/error/errorResponse.dto';
 import { loginSuccess } from './utils/swagger/login/successResponse';
 import {
   notFoundFail,

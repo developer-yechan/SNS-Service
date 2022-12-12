@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -24,7 +20,7 @@ export class AuthService {
       }
       return null;
     } catch (err) {
-      throw new BadRequestException('존재하지 않는 유저입니다.');
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
   }
 

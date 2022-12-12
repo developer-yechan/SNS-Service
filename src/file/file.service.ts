@@ -1,15 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PostImage } from 'src/entity/post-images.entity';
-import { Post } from 'src/entity/post.entity';
-import { Repository } from 'typeorm';
-import {
-  DeleteObjectsCommand,
-  S3Client,
-  S3ServiceException,
-} from '@aws-sdk/client-s3';
-import { ConfigService } from '@nestjs/config';
+import { DeleteObjectsCommand, S3ServiceException } from '@aws-sdk/client-s3';
 import { s3ClientService } from 'src/utils/s3Client/s3Client.service';
 import { FileRepository } from './file.repository';
 import { PostRepository } from 'src/post/post.repository';

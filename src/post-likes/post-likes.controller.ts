@@ -13,10 +13,8 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   ApiUnauthorizedResponse,
-  ApiOkResponse,
   ApiBadRequestResponse,
   ApiNotFoundResponse,
-  ApiExtraModels,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import {

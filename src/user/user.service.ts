@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from 'src/dto/user/createUser.dto';
 import { UpdateUserDto } from 'src/dto/user/updateUser.dto';
 import { User } from '../entity/user.entity';
@@ -24,15 +24,23 @@ export class UserService {
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOneByEmail(email);
+    const user = await this.userRepository.findUserByEmail(email);
     return user;
   }
   async update(id: number, data: UpdateUserDto) {
+    const findUser = await this.userRepository.findUser(id);
+    if (!findUser) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
+    }
     const userUpdate = await this.userRepository.updateUser(id, data);
     return userUpdate;
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
+    const findUser = await this.userRepository.findUser(id);
+    if (!findUser) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
+    }
     const userDelete = await this.userRepository.deleteUser(id);
     return userDelete;
   }

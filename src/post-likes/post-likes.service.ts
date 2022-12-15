@@ -4,12 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PostRepository } from 'src/post/post.repository';
-import { postLikeRepository } from './post-likes.repository';
+import { PostLikeRepository } from './post-likes.repository';
 
 @Injectable()
 export class PostLikesService {
   constructor(
-    private postLikeRepository: postLikeRepository,
+    private postLikeRepository: PostLikeRepository,
     private postRepository: PostRepository,
   ) {}
   async create(postId: number, userId: number) {

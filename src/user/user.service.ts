@@ -10,6 +10,7 @@ export class UserService {
 
   async create(data: CreateUserDto) {
     const user = this.userRepository.createUser(data);
+
     return user;
   }
 
@@ -20,6 +21,9 @@ export class UserService {
 
   async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findUser(id);
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
+    }
     return user;
   }
 

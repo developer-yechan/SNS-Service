@@ -13,7 +13,7 @@ export class FileService {
   ) {}
 
   async uploadFile(postId: number, files: Express.MulterS3.File[]) {
-    if (!files) {
+    if (files.length === 0) {
       throw new BadRequestException('파일이 존재하지 않습니다.');
     }
     const post = this.postRepository.findPost(postId);

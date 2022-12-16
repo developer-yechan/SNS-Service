@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { DeleteObjectsCommand, S3ServiceException } from '@aws-sdk/client-s3';
-import { s3ClientService } from 'src/utils/s3Client/s3Client.service';
+import { S3ClientService } from 'src/utils/s3Client/s3Client.service';
 import { FileRepository } from './file.repository';
 import { PostRepository } from 'src/post/post.repository';
 @Injectable()
@@ -9,27 +9,25 @@ export class FileService {
   constructor(
     private fileRepository: FileRepository,
     private postRepository: PostRepository,
-    private s3ClientService: s3ClientService,
+    private s3ClientService: S3ClientService,
   ) {}
 
   async uploadFile(postId: number, files: Express.MulterS3.File[]) {
     if (files.length === 0) {
       throw new BadRequestException('파일이 존재하지 않습니다.');
     }
-    const post = this.postRepository.findPost(postId);
+    const post = await this.postRepository.findPost(postId);
     if (!post) {
       throw new NotFoundException('게시물이 존재하지 않습니다.');
     }
-    const fileUpload = this.fileRepository.createPostImage(postId, files);
+    const fileUpload = await this.fileRepository.createPostImage(postId, files);
     return fileUpload;
   }
   async deleteFile(postId: number) {
     const s3 = this.s3ClientService.s3();
     const images = await this.fileRepository.findPostImages(postId);
     if (images.length === 0) {
-      throw new NotFoundException(
-        `postId가 ${postId}인 image가 존재하지 않습니다.`,
-      );
+      throw new NotFoundException('해당 postId로 저장된 image가 없습니다.');
     }
     const deleteObject = [];
     for (const image of images) {
@@ -55,7 +53,7 @@ export class FileService {
         name: 'aws s3 delete error',
       });
     }
-    const postImageDelete = this.fileRepository.deletePostImage(postId);
+    const postImageDelete = await this.fileRepository.deletePostImage(postId);
     return postImageDelete;
   }
 }

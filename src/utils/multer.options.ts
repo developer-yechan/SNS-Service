@@ -2,10 +2,10 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 import * as multerS3 from 'multer-s3';
 import { S3Client } from '@aws-sdk/client-s3';
 import * as path from 'path';
-import { s3ClientService } from './s3Client/s3Client.service';
+import { S3ClientService } from './s3Client/s3Client.service';
 
 export const multerOptionsFactory = (
-  s3ClientService: s3ClientService,
+  s3ClientService: S3ClientService,
 ): MulterOptions => {
   // s3 인스턴스를 생성합니다.
   const s3 = s3ClientService.s3();

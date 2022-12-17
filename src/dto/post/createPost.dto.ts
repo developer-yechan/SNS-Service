@@ -12,5 +12,5 @@ export class CreatePostDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  hashtags: string;
+  hashtags?: string;
 }

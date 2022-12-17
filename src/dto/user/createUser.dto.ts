@@ -39,5 +39,5 @@ export class CreateUserDto {
   @ApiProperty({ description: 'profile_image' })
   @IsOptional()
   @IsString()
-  readonly image: string;
+  readonly image?: string;
 }

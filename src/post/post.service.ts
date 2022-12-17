@@ -60,7 +60,6 @@ export class PostService {
     const { id, title, content, hashtags } = data;
     // getOne은 entity 반환 getRawOne은 raw data 반환 여기서는 기존 post entity에 새로운 hashtag를 맵핑 해줘야 하므로 getOne 사용
     const findPost = await this.postRepository.findPostEntity(id, userId);
-
     if (!findPost) {
       throw new NotFoundException('존재하지 않는 게시물입니다.');
     }
@@ -98,7 +97,6 @@ export class PostService {
     updatePostDao.hashtagInstanceArr = hashtagInstanceArr;
     updatePostDao.post = findPost;
     const updatePost = await this.postRepository.updatePost(updatePostDao);
-
     // 게시물 삭제된 경우 예외처리
     if (!updatePost.affected) {
       throw new NotFoundException('이미 삭제된 게시물입니다.');
@@ -107,11 +105,11 @@ export class PostService {
   }
 
   async findAll(
-    orderBy: string,
-    order: 'DESC' | 'ASC',
-    search: string,
-    filter: string,
-    cnt: number,
+    orderBy?: string,
+    order?: 'DESC' | 'ASC',
+    search?: string,
+    filter?: string,
+    cnt?: number,
   ): Promise<Post[]> {
     const findPostsDao = { orderBy, order, search, filter, cnt };
     const posts = await this.postRepository.findPosts(findPostsDao);

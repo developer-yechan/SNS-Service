@@ -3,11 +3,10 @@ import { post } from 'src/post/mockValue';
 import { PostRepository } from 'src/post/post.repository';
 import { FileRepository } from './file.repository';
 import { FileService } from './file.service';
-import { files, images, uploadSuccess } from './mockValue';
+import { files, uploadSuccess } from './mockValue';
 import { S3ClientService } from 'src/utils/s3Client/s3Client.service';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { S3ServiceException } from '@aws-sdk/client-s3';
 
 describe('FileService', () => {
   let service: FileService;

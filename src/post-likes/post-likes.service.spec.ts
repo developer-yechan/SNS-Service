@@ -61,7 +61,7 @@ describe('PostLikesService', () => {
     });
   });
 
-  describe('deleteUser', () => {
+  describe('deletePostLike', () => {
     it('should return a success message object', async () => {
       const result = {
         message: '좋아요 취소 완료',

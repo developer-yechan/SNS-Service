@@ -93,7 +93,7 @@
     "roots": [
       "src"
     ],
-    "testRegex": ".specs.ts$",
+    "testRegex": "service.spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

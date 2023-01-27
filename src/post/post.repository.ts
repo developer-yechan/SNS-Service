@@ -1,7 +1,7 @@
 import { CustomRepository } from 'src/decorator/typeorm-ex.decorator';
 import { Repository } from 'typeorm';
 import { Post } from 'src/entity/post.entity';
-import { likes, hashtags } from 'src/query/subQuery';
+import { likes, hashtags, postImages } from 'src/query/subQuery';
 import { CreatePostDao } from 'src/dao/createPost.dao';
 import { User } from 'src/entity/user.entity';
 import { UpdatePostDao } from 'src/dao/updatePost.dao';
@@ -63,10 +63,12 @@ export class PostRepository extends Repository<Post> {
         'COALESCE(posts.hits,0)::int AS hits',
         'users.name AS username',
         'hashtags.hashtags',
+        '"postImages".images',
         'COALESCE(likes.like_num,0)::int AS like_num',
       ])
       .leftJoin('posts.user', 'users')
-      .leftJoin(likes, 'likes', 'posts.id = likes.postId');
+      .leftJoin(likes, 'likes', 'posts.id = likes.postId')
+      .leftJoin(postImages, 'postImages', 'posts.id = "postImages"."postId"');
 
     query = findPostsQuery(query, findPostsDao);
 
@@ -84,11 +86,13 @@ export class PostRepository extends Repository<Post> {
         'COALESCE(posts.hits,0)::int AS hits',
         'users.name AS username',
         'hashtags.hashtags',
+        '"postImages".images',
         'COALESCE(likes.like_num,0)::int AS like_num',
       ])
       .leftJoin('posts.user', 'users')
       .leftJoin(hashtags, 'hashtags', 'posts.id = hashtags.postId')
       .leftJoin(likes, 'likes', 'posts.id = likes.postId')
+      .leftJoin(postImages, 'postImages', 'posts.id = "postImages"."postId"')
       .where('posts.id = :id', { id })
       .getRawOne();
 

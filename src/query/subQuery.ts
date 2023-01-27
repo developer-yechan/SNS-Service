@@ -16,3 +16,16 @@ export const hashtags = (subQuery) => {
     .leftJoin('posts.hashtags', 'hashtags')
     .groupBy('posts.id');
 };
+
+// postId 별 postImage 배열을 return 하는 subQuery
+
+export const postImages = (subQuery) => {
+  return subQuery
+    .select([
+      'posts.id AS "postId"',
+      'ARRAY_AGG(postImages.imageUrl) AS images',
+    ])
+    .from(Post, 'posts')
+    .leftJoin('posts.postImages', 'postImages')
+    .groupBy('posts.id');
+};

@@ -8,15 +8,15 @@ export class UpdatePostDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  title: string;
+  title?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsString()
-  content: string;
+  content?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsString()
-  hashtags: string;
+  hashtags?: string;
 }

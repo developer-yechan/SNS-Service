@@ -37,7 +37,7 @@ export class Post extends DateContent {
   @ManyToOne(() => User, (user) => user.posts, {
     onDelete: 'CASCADE',
   })
-  user: User;
+  user?: User;
 
   @RelationId((post: Post) => post.user)
   @ApiProperty()
@@ -45,11 +45,11 @@ export class Post extends DateContent {
 
   @OneToMany(() => PostLike, (postLike) => postLike.post)
   @ApiProperty()
-  postLikes: PostLike[];
+  postLikes?: PostLike[];
 
   @OneToMany(() => PostImage, (postImage) => postImage.post)
   @ApiProperty()
-  postImages: PostImage[];
+  postImages?: PostImage[];
 
   @ManyToMany(() => Hashtag, (hashtags) => hashtags.id, {
     // ManyToMany 관계에 있는 테이블은 cascade true 줘서 별도로 hashtagRepository.save 하지 않아도 hashtag 저장 가능
@@ -57,5 +57,5 @@ export class Post extends DateContent {
   })
   @JoinTable()
   @ApiProperty()
-  hashtags: Hashtag[];
+  hashtags?: Hashtag[];
 }

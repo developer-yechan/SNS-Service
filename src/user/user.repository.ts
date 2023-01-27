@@ -45,9 +45,7 @@ export class UserRepository extends Repository<User> {
         id,
       },
     });
-    if (!user) {
-      throw new NotFoundException('존재하지 않는 유저입니다.');
-    }
+
     return user;
   }
 

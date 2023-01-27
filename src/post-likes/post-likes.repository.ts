@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Post } from 'src/entity/post.entity';
 import { User } from '../entity/user.entity';
 @CustomRepository(PostLike)
-export class postLikeRepository extends Repository<PostLike> {
+export class PostLikeRepository extends Repository<PostLike> {
   async createPostLike(userId: number, postId: number) {
     const like = new PostLike();
     const user = new User();

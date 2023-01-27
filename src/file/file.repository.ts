@@ -8,14 +8,15 @@ export class FileRepository extends Repository<PostImage> {
   async createPostImage(postId: number, files: Express.MulterS3.File[]) {
     const post = new Post();
     post.id = postId;
+    const imageList = [];
     for (const file of files) {
       const postImage = new PostImage();
       postImage.imageUrl = file.location;
       postImage.post = post;
       await this.save(postImage);
+      imageList.push(postImage);
     }
-    const postImages = this.findPostImages(postId);
-    return postImages;
+    return imageList;
   }
 
   async findPostImages(postId: number) {

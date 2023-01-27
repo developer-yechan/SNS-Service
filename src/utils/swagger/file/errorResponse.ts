@@ -38,7 +38,7 @@ export const notFoundFail = {
     'application/json': {
       example: {
         statusCode: 404,
-        message: 'postId가 11인 image가 존재하지 않습니다.',
+        message: '해당 postId로 저장된 image가 없습니다.',
         error: 'Not Found',
       },
       schema: {

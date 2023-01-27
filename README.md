@@ -6,6 +6,8 @@
 
 [ERD](#erd)
 
+[Test](#test)
+
 [API Docs](#api-docs)
 
 [기술 스택](#기술-스택)
@@ -57,6 +59,11 @@
 
 ![image](https://user-images.githubusercontent.com/99064214/206108839-0203ed13-f285-4262-87aa-79aaa2f747b3.png)
 
+## Test
+### Service Unit Test
+![Service_test1](https://user-images.githubusercontent.com/99064214/208227270-2b58939e-054b-4589-941f-4d4bb00b518e.png)   
+![Service_test2](https://user-images.githubusercontent.com/99064214/208227280-bb179f70-0fa0-4446-9994-1d4c56e65747.png)
+
 
 ## API Docs
 
@@ -67,4 +74,4 @@ or
 
 
 ## 기술 스택
-### Nestjs, Typescript, Postgresql, Typeorm, Swagger
+### Nestjs, Typescript, PostgreSQL, Typeorm, Swagger, Jest

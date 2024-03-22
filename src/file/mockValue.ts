@@ -5,7 +5,7 @@ export const uploadSuccess = {
   postid: 11,
 };
 
-export const files: Express.MulterS3.File[] = [
+export const files: any = [
   {
     fieldname: 'file',
     originalname: 'KakaoTalk_20221009_193422897_01.jpg',

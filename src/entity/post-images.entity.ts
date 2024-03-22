@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { DateContent } from './abstract-base.entity';
 
-@Entity('postImages')
+@Entity('post_images')
 export class PostImage {
   @PrimaryGeneratedColumn()
   id: number;

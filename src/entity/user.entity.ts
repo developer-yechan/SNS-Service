@@ -9,6 +9,8 @@ import {
 import { PostLike } from 'src/entity/post-likes.entity';
 import { DateContent } from './abstract-base.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { ChatRoom } from './chat-room.entity';
+import { ChatMessage } from './chat-message.entity';
 @Entity('users')
 export class User extends DateContent {
   @PrimaryGeneratedColumn()
@@ -38,6 +40,12 @@ export class User extends DateContent {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+
+  @OneToMany(() => ChatRoom, (chatRoom) => chatRoom.host)
+  chatRooms: ChatRoom[];
+
+  @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.user)
+  chatMessages: ChatMessage[];
 
   @OneToMany(() => PostLike, (postLike) => postLike.user)
   postLikes: PostLike[];

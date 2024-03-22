@@ -9,7 +9,7 @@ import {
 import { Post } from 'src/entity/post.entity';
 import { User } from 'src/entity/user.entity';
 
-@Entity('postLikes')
+@Entity('post_likes')
 export class PostLike {
   @PrimaryGeneratedColumn()
   id: number;

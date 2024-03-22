@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -14,6 +14,10 @@ import { Hashtag } from './entity/hashtag.entity';
 import { PostImage } from './entity/post-images.entity';
 import { User } from './entity/user.entity';
 import { FileModule } from './file/file.module';
+import { ChatModule } from './websocket/chat.module';
+import { ChatRoomModule } from './chat-room/chat_room.module';
+import { ChatRoom } from './entity/chat-room.entity';
+import { ChatMessage } from './entity/chat-message.entity';
 
 @Module({
   imports: [
@@ -35,12 +39,23 @@ import { FileModule } from './file/file.module';
         username: ConfigService.get('database.username'),
         password: ConfigService.get('database.password'),
         database: ConfigService.get('database.name'),
-        synchronize: true,
+        synchronize: false,
         logging: ['query', 'error'],
-        entities: [User, Post, PostLike, Hashtag, PostImage],
+        entities: [
+          User,
+          Post,
+          PostLike,
+          Hashtag,
+          PostImage,
+          ChatRoom,
+          ChatMessage,
+        ],
+        // migrations: ['dist/database/migrations/*.js'],
       }),
     }),
     FileModule,
+    ChatModule,
+    // ChatRoomModule
   ],
   controllers: [AppController],
   providers: [AppService],
